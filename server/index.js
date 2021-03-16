@@ -1,8 +1,8 @@
 require("dotenv").config();
 const express = require("express");
+const bodyParser = require("body-parser");
 const cors = require("cors");
 
-const router = require("./routes");
 const db = require("./database");
 
 const PORT = 1000;
@@ -14,10 +14,11 @@ app.use(cors());
 
 db.connect((err) => {
   if (err) return console.log(err);
-
+  
   console.log(`database connected: ${db.threadId}`);
 });
 
-app.use(router);
+const {userRouter} = require("./routes");
+app.use('/user', userRouter);
 
 app.listen(PORT, () => console.log("Listening on port:", PORT));
