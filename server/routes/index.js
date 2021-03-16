@@ -1,6 +1,6 @@
-const express = require("express");
-const router = express.Router();
+const productRouter= require("./productRouter")
 
-router.get("/", (req, res) => res.json({ status: "OK" }));
 
-module.exports = router;
+module.exports={
+    productRouter
+}

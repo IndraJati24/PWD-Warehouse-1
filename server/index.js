@@ -18,6 +18,9 @@ db.connect((err) => {
   console.log(`database connected: ${db.threadId}`);
 });
 
-app.use(router);
+
+const {productRouter}=require("./routes")
+
+app.use("/product",productRouter);
 
 app.listen(PORT, () => console.log("Listening on port:", PORT));
