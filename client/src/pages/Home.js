@@ -197,7 +197,7 @@ export default function Home() {
         </Dropdown.Item>
         {kategori.map((item, index) => {
           return (
-            <Dropdown.Item onClick={() => handleCategory(item.nama_kategori)}>
+            <Dropdown.Item onClick={() => handleCategory(item.nama_kategori)} key={index}>
               {item.nama_kategori}
             </Dropdown.Item>
           );
