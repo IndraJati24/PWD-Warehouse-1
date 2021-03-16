@@ -18,7 +18,8 @@ db.connect((err) => {
   console.log(`database connected: ${db.threadId}`);
 });
 
-const {userRouter} = require("./routes");
+const {productRouter, userRouter}=require("./routes")
+app.use("/product",productRouter);
 app.use('/user', userRouter);
 
 app.listen(PORT, () => console.log("Listening on port:", PORT));
