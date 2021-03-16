@@ -1,7 +1,8 @@
-const productRouter= require("./productRouter")
-const userRouter = require('./userRoutes')
+const express = require("express");
+const { login } = require("../controllers/userController");
+const router = express.Router();
 
-module.exports={
-    productRouter,
-    userRouter
-}
+router.get("/", (req, res) => res.json({ status: "OK" }));
+router.post("/login", login);
+
+module.exports = router;
