@@ -1,16 +1,25 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
 import App from "./App";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter as Router } from "react-router-dom";
 
-import "bootstrap/dist/css/bootstrap.min.css";
+import allReducer from "./reducer";
+import { Provider } from "react-redux";
+import { createStore, applyMiddleware } from "redux";
+import thunk from "redux-thunk";
+
+const globalState = createStore(allReducer, applyMiddleware(thunk));
+
+globalState.subscribe(() =>
+  console.log("Global State: ", globalState.getState())
+);
 
 ReactDOM.render(
-  <React.StrictMode>
+  <Provider store={globalState}>
     <Router>
       <App />
     </Router>
-  </React.StrictMode>,
+  </Provider>,
   document.getElementById("root")
 );

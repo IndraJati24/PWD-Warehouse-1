@@ -1,8 +1,5 @@
-const express = require("express");
-const { login } = require("../controllers/userController");
-const router = express.Router();
+const userRouter = require("./userRoutes");
 
-router.get("/", (req, res) => res.json({ status: "OK" }));
-router.post("/login", login);
-
-module.exports = router;
+module.exports = {
+  userRouter,
+};
