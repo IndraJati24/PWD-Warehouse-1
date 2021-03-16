@@ -1,6 +1,12 @@
 const db = require("../database");
 const cryptojs = require("crypto-js");
+const fs = require("fs");
+const jwt = require("jsonwebtoken");
+const { validationResult } = require("express-validator");
+const handleBars = require("handlebars");
+const transporter = require("../helpers/nodemailer");
 const { createToken } = require("../helpers/jwt");
+const { asyncQuery } = require("../helpers/queryHelp");
 
 const SECRET_KEY = process.env.CRYPTO_KEY;
 
@@ -38,7 +44,7 @@ module.exports = {
     let { username, password, email } = req.body;
 
     //!hashpassword
-    const hashpass = cryptjs.HmacMD5(password, SECRET_KEY).toString();
+    const hashpass = cryptojs.HmacMD5(password, SECRET_KEY).toString();
 
     //!validation
     let errors = validationResult(req);
@@ -74,7 +80,7 @@ module.exports = {
       //!Send EMail Notification
       const option = {
         from: `Admin <indrajati24@gmail.com>`,
-        to: "jatigamez@gmail.com",
+        to: email,
         subject: "Account Verification",
       };
 
