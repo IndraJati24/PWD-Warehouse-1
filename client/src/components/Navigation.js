@@ -37,6 +37,9 @@ const Navigation = () => {
 					<Nav.Link as={Link} to="/login">
 						Login
 					</Nav.Link>
+					<Nav.Link as={Link} to="/cart">
+					<i class="fas fa-shopping-cart"></i>
+					</Nav.Link>
 					<Nav.Link as={Link} to="/" onClick={() => dispatch(logout())}>
 						Logout
 					</Nav.Link>
