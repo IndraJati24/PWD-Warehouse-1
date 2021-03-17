@@ -26,3 +26,28 @@ export const logout = () => {
 		}
 	};
 };
+
+export const login = (data, history) => async (dispatch) => {
+	dispatch({ type: "LOADING", payload: true });
+	try {
+		const result = await Axios.post('http://localhost:1000/user/login', data)
+		localStorage.setItem('token', result.data.token)
+		dispatch({ type: 'LOGIN', payload: result.data.user })
+		history.push('/')
+		dispatch({ type: "LOADING", payload: false });
+	} catch (err) {
+		console.log(err)
+	}
+	// dispatch({ type: 'LOGOUT' })
+	// console.log('dispatch')
+}
+
+export const keepLogin = () => async (dispatch) => {
+	const token = localStorage.getItem('token')
+	try {
+		const result = await Axios.post('http://localhost:1000/user/keepLogin', { token: token })
+		dispatch({ type: 'LOGIN', payload: result.data })
+	} catch (err) {
+		console.log(err)
+	}
+}

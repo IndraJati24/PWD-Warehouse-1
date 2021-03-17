@@ -7,7 +7,7 @@ function createToken(data) {
 
 function verifyToken(req, res, next) {
   const token = req.body.token;
-  // console.log('token : ', token)
+  console.log('token : ', token)
 
   //check if token exist
   if (!token) return res.status(400).send("no token");

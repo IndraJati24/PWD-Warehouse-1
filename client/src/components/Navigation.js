@@ -1,16 +1,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../action";
 
 import { Navbar, Nav, NavDropdown } from "react-bootstrap";
 
 const Navigation = () => {
 	const dispatch = useDispatch();
+	const { user } = useSelector(state => state.user)
+
 	return (
 		<Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
 			<Navbar.Brand as={Link} to="/">
-				React-Bootstrap
+				Warehouse Group 1
 			</Navbar.Brand>
 			<Navbar.Toggle aria-controls="responsive-navbar-nav" />
 			<Navbar.Collapse id="responsive-navbar-nav">
@@ -18,10 +20,9 @@ const Navigation = () => {
 					<Nav.Link as={Link} to="/">
 						Home
 					</Nav.Link>
-					<Nav.Link href="#pricing">Pricing</Nav.Link>
 				</Nav>
 				<Nav>
-					<NavDropdown
+					{/* <NavDropdown
 						title="Username"
 						id="collasible-nav-dropdown"
 						style={{ marginRight: 15 }}
@@ -38,14 +39,26 @@ const Navigation = () => {
 						Login
 					</Nav.Link>
 					<Nav.Link as={Link} to="/cart">
-					<i class="fas fa-shopping-cart"></i>
+						<i class="fas fa-shopping-cart"></i>
 					</Nav.Link>
-					<Nav.Link as={Link} to="/" onClick={() => dispatch(logout())}>
+					<Nav.Link as={Link} to="/login" onClick={() => dispatch(logout())}>
 						Logout
 					</Nav.Link>
 					<Nav.Link as={Link} to="/register">
 						Register
+					</Nav.Link> */}
+					<Nav.Link as={Link} to="/cart">
+						<i class="fas fa-shopping-cart"></i>
 					</Nav.Link>
+					{user.id_user ? (
+						<Nav.Link as={Link} to="/login" onClick={() => dispatch(logout())}>
+							Logout
+						</Nav.Link>
+					) : (
+							<Nav.Link as={Link} to="/login">
+								Login
+							</Nav.Link>
+						)}
 				</Nav>
 			</Navbar.Collapse>
 		</Navbar>

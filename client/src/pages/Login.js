@@ -8,7 +8,9 @@ import {
   Alert,
 } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
-import axios from "axios";
+import { useSelector, useDispatch } from 'react-redux'
+// import axios from "axios";
+import { login } from '../action'
 
 const defaultData = {
   username: "",
@@ -17,6 +19,9 @@ const defaultData = {
 
 const Login = () => {
   const history = useHistory();
+  const dispatch = useDispatch()
+  const { isLoading } = useSelector((state) => state.user);
+  // console.log('state', isLoading)
 
   const [openPass, setOpenPass] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -33,16 +38,18 @@ const Login = () => {
   const onSubmitForm = (e) => {
     e.preventDefault();
 
-    axios
-      .post("http://localhost:1000/login", data)
-      .then((res) => {
-        setData(defaultData);
-        history.push("/");
-      })
-      .catch((err) => {
-        console.error(err.response, "error");
-        setErrorMessage(err.response.data);
-      });
+    dispatch(login(data, history))
+    // login();
+    // axios
+    //   .post("http://localhost:1000/login", data)
+    //   .then((res) => {
+    //     setData(defaultData);
+    //     history.push("/");
+    //   })
+    //   .catch((err) => {
+    //     console.error(err.response, "error");
+    //     setErrorMessage(err.response.data);
+    //   });
   };
 
   return (
@@ -97,16 +104,16 @@ const Login = () => {
                 placeholder="Password"
               />
             </InputGroup>
-            <Form.Text className="text-muted">
-              We'll never share your password with anyone else.
+            <Form.Text className="text-right">
+              <Link to={{ pathname: "/forgot-password" }}>forgot password?</Link>
             </Form.Text>
           </Form.Group>
           <Button variant="primary" type="submit">
-            Submit
+            {isLoading ? 'Loading...' : 'Submit'}
           </Button>
           <Form.Text>
             Don't Have Account Yet? Register{" "}
-            {/* <Link to={{ pathname: "/register" }}>here</Link> */}
+            <Link to={{ pathname: "/register" }}>here</Link>
           </Form.Text>
         </Form>
       </Container>

@@ -1,6 +1,12 @@
 const INITIAL_STATE = {
 	isLoading: false,
 	logError: [],
+	user: {
+		id_user: null,
+		email: "",
+		username: "",
+		id_role: null,
+	},
 };
 
 export const userReducer = (state = INITIAL_STATE, action) => {
@@ -14,6 +20,11 @@ export const userReducer = (state = INITIAL_STATE, action) => {
 			return {
 				...state,
 				logError: action.payload,
+			};
+		case "LOGIN":
+			return {
+				...state,
+				user: action.payload,
 			};
 		case "LOGOUT":
 			return INITIAL_STATE;

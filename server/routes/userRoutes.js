@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { userController } = require("../controllers");
 const { body } = require("express-validator");
+const { verifyToken } = require("../helpers/jwt");
 
 const registerValidation = [
   body("username")
@@ -23,5 +24,8 @@ const registerValidation = [
 router.put("/register", registerValidation, userController.userRegister);
 router.post("/verification", userController.emailVerification);
 router.post("/login", userController.login);
+router.post('/keepLogin', verifyToken, userController.keepLogin)
+router.post('/forgotPassword', userController.forgotPassword)
+router.post('/resetPassword', userController.resetPassword)
 
 module.exports = router;
