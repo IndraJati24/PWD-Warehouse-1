@@ -37,11 +37,13 @@ module.exports={
      getCart: async (req, res) => {
         const id = parseInt(req.params.id)
         try {
-            const getCart = `select * from orders o
+            const getCart = `select *, sum(wp.stock) as total_stock from orders o
             join order_details od on o.no_order = od.no_order
+            join warehouse_product wp on wp.id_product = od.id_product
             join product p on od.id_product=p.id_product
             join order_status os on os.id_order_status=o.status
-            where o.status=1 and o.id_user=${id}`
+            where o.status=1 and o.id_user = ${id}
+			group by od.id_product`
 
             const result = await asyncQuery(getCart)
 
