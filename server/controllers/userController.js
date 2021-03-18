@@ -36,7 +36,7 @@ function login(req, res) {
 
     delete result[0].password;
     delete result[0].verify;
-    console.log(result[0])
+    // console.log(result[0])
 
     res.status(200).json({ token, user: result[0] });
   });
@@ -49,8 +49,9 @@ async function keepLogin(req, res) {
             WHERE username='${req.user.username}'`;
 
     const result = await asyncQuery(getUser);
-    console.log('result dari query', result[0])
+    // console.log('result dari query', result[0])
 
+    delete result[0].password
     res.status(200).send(result[0]);
   } catch (err) {
     console.log(err);
