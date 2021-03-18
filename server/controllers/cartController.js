@@ -46,14 +46,14 @@ module.exports={
         }
     },
      getCart: async (req, res) => {
-        const id = parseInt(req.params.id)
+        const id = (req.params.id)
         try {
             const getCart = `select *, sum(wp.stock) as total_stock from orders o
             join order_details od on o.no_order = od.no_order
             join warehouse_product wp on wp.id_product = od.id_product
             join product p on od.id_product=p.id_product
             join order_status os on os.id_order_status=o.status
-            where o.status=1 and o.id_user = ${id}
+            where o.status=1 and o.id_user = ${db.escape(id)}
 			group by od.id_product`
 
             const result = await asyncQuery(getCart)
@@ -81,4 +81,17 @@ module.exports={
             res.status(400).send(err)
         }
     },
+    deleteCart: async (req,res)=>{
+        const id = (req.params.id)
+        try{
+            const delQuery = `DELETE FROM order_details where id_order_details = ${db.escape(id)}`
+            await asyncQuery(delQuery)
+
+            res.status(200).send('Delete Success')
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
+    }
 }

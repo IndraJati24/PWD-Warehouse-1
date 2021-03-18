@@ -135,7 +135,7 @@ export default function Home() {
     //renderProduct
     const Product = () => {
         return (
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-evenly' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {data.slice(indexOfFirstItem, indexOfLastItem).map((item, index) => {
                     if (item.stock === 0) return
                     return (
@@ -147,7 +147,7 @@ export default function Home() {
                                     <Card.Text>IDR {item.price.toLocaleString()}</Card.Text>
                                     <div >
                                     <Button  style={{width:"6.5rem",marginRight:"8px"}} variant="success" as={Link} to={`/detail/${item.id_product}`} >Buy</Button>
-                                    <Button variant="warning" ><i class="fas fa-shopping-cart"></i></Button>
+                                    <Button variant="warning" ><i className="fas fa-shopping-cart"></i></Button>
                                     </div>
                                 </div>
                             </Card.Body>
@@ -169,7 +169,7 @@ export default function Home() {
                 <Dropdown.Item onClick={()=>setcurrentKategori(null)} >All Product</Dropdown.Item>
                 {kategori.map((item,index)=>{
                     return(
-                        <Dropdown.Item onClick={()=>handleCategory(item.nama_kategori)} >{item.nama_kategori}</Dropdown.Item>
+                        <Dropdown.Item onClick={()=>handleCategory(item.nama_kategori)} key={index}>{item.nama_kategori}</Dropdown.Item>
                     )
                 })}
                 
