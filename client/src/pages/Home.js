@@ -12,8 +12,8 @@ export default function Home() {
     //pagination
     const [currentPage, setcurrentPage] = useState(1)
     const [itemsPerPage, setitemsPerPage] = useState(10)
-    const [pageNumberLimit, setpageNumberLimit] = useState(5);
-    const [maxPageNumberLimit, setmaxPageNumberLimit] = useState(5);
+    const [pageNumberLimit, setpageNumberLimit] = useState(10);
+    const [maxPageNumberLimit, setmaxPageNumberLimit] = useState(10);
     const [minPageNumberLimit, setminPageNumberLimit] = useState(0);
 
     useEffect(() => {
@@ -77,7 +77,7 @@ export default function Home() {
         setData(temp);
     }
 
-    function namaAsc(a, b) {
+    function namaAz(a, b) {
         if (a.name < b.name) {
             return -1;
         }
@@ -86,9 +86,23 @@ export default function Home() {
         }
         return 0;
     }
-    const urutAbjad = () => {
+    function namaZa(a, b) {
+        if (a.name < b.name) {
+            return 1;
+        }
+        if (a.name > b.name) {
+            return -1;
+        }
+        return 0;
+    }
+    const urutAbjadAz = () => {
         let temp = [...data]
-        temp.sort(namaAsc)
+        temp.sort(namaAz)
+        setData(temp)
+    }
+    const urutAbjadZa = () => {
+        let temp = [...data]
+        temp.sort(namaZa)
         setData(temp)
     }
 
@@ -147,7 +161,7 @@ export default function Home() {
                                     <Card.Text>IDR {item.price.toLocaleString()}</Card.Text>
                                     <div >
                                     <Button  style={{width:"6.5rem",marginRight:"8px"}} variant="success" as={Link} to={`/detail/${item.id_product}`} >Buy</Button>
-                                    <Button variant="warning" ><i className="fas fa-shopping-cart"></i></Button>
+                                    <Button variant="warning" ><i class="fas fa-shopping-cart"></i></Button>
                                     </div>
                                 </div>
                             </Card.Body>
@@ -169,7 +183,7 @@ export default function Home() {
                 <Dropdown.Item onClick={()=>setcurrentKategori(null)} >All Product</Dropdown.Item>
                 {kategori.map((item,index)=>{
                     return(
-                        <Dropdown.Item onClick={()=>handleCategory(item.nama_kategori)} key={index}>{item.nama_kategori}</Dropdown.Item>
+                        <Dropdown.Item onClick={()=>handleCategory(item.nama_kategori)} >{item.nama_kategori}</Dropdown.Item>
                     )
                 })}
                 
@@ -182,7 +196,8 @@ export default function Home() {
             <div style={{display:"flex",flexDirection:"row"}}>
                 <Button variant="outline-info" onClick={hargaTerkecil} style={{marginLeft:"1rem"}}>Harga Terkecil</Button>
                 <Button variant="outline-info" onClick={hargaTerbesar} style={{marginLeft:"2rem"}}>Harga Terbesar</Button>
-                <Button variant="outline-info" onClick={urutAbjad} style={{marginLeft:"2rem"}}>Nama</Button>
+                <Button variant="outline-info" onClick={urutAbjadAz} style={{marginLeft:"2rem"}}>Nama A - Z</Button>
+                <Button variant="outline-info" onClick={urutAbjadZa} style={{marginLeft:"2rem"}}>Nama Z - A</Button>
                 <div style={{marginLeft:"2rem"}}>
                 {renderCategory()}
                 </div>

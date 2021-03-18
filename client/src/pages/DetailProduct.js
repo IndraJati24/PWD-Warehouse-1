@@ -10,7 +10,8 @@ class DetailProduct extends Component {
             product: {},
             modal: false,
             qty: 1,
-            toast: false
+            toast: false,
+            cart: []
         };
     }
     componentDidMount() {
@@ -18,7 +19,11 @@ class DetailProduct extends Component {
             `http://localhost:1000/product/getDetailPage/${this.props.match.params.id}`
         )
             .then((res) => {
-                this.setState({ product: res.data });
+                Axios.get(`http://localhost:1000/cart/getCart/${this.props.id}`)
+                    .then((res2) => {
+                        this.setState({ cart: res2.data, product: res.data });
+                    })
+                    .catch((err) => console.log(err));
             })
             .catch((err) => console.log(err));
     }
@@ -36,31 +41,72 @@ class DetailProduct extends Component {
     };
 
     handleAddToCart = () => {
-        const { qty, product } = this.state;
+        const { qty, product,cart } = this.state;
+        // console.log("sebelum",cart);
+        let cartFilter=[]
+        let idx=null
+        cart.forEach((item,index)=>{
+            if(item.id_product===product.id_product){
+                cartFilter.push(item)
+                idx=index
+            }
+        })
 
-        if (qty > parseInt(product.total_stock))
-            return alert(
-                `The amount exceeds from stock, current stock is ${product.total_stock} `
-            );
-        let cartData = {
-            no_order: Date.now(),
-            id_user: (this.props.id ? this.props.id : 2),
-            id_product: product.id_product,
-            quantity: qty,
-            total: qty * product.price
+        if(cartFilter.length!==0){
+            if (qty+cartFilter[0].quantity > parseInt(product.total_stock))
+                return alert(
+                    `The amount exceeds from stock, current stock is ${product.total_stock} `
+                );
+                cartFilter[0].quantity+=qty
+                cart.splice(idx, 1, cartFilter[0])    
+            let cartData = {
+                no_order: Date.now(),
+                id_user: (this.props.id ? this.props.id : 2),
+                id_product: product.id_product,
+                quantity: qty,
+                total: qty * product.price
+            }
+    
+            Axios.post(`http://localhost:1000/cart/addCart`, cartData)
+                .then((res) => {
+                    this.setState({ modal: false, toast: true });
+                })
+                .catch((err) => console.log(err));
+        }else{
+            if (qty > parseInt(product.total_stock))
+                return alert(
+                    `The amount exceeds from stock, current stock is ${product.total_stock} `
+                );
+                
+            let cartData = {
+                no_order: Date.now(),
+                id_user: (this.props.id ? this.props.id : 2),
+                id_product: product.id_product,
+                quantity: qty,
+                total: qty * product.price
+            }
+    
+            Axios.post(`http://localhost:1000/cart/addCart`, cartData)
+                .then((res) => {
+                    Axios.get(`http://localhost:1000/cart/getCart/${this.props.id}`)
+                    .then((res2) => {
+                        this.setState({ cart: res2.data });
+                        
+                        this.setState({ modal: false, toast: true });
+                    })
+                    .catch((err) => console.log(err));
+                    // window.location.reload(false); 
+                })
+                .catch((err) => console.log(err));
         }
 
-        Axios.post(`http://localhost:1000/cart/addCart`, cartData)
-            .then((res) => {
-                this.setState({ modal: false, toast: true });
-            })
-            .catch((err) => console.log(err));
 
 
     };
 
     render() {
         const { product, modal, qty } = this.state;
+        console.log(this.state.cart);
         return (
             <div style={{ margin: "3rem 5rem" }}>
                 <h1>Product Detail</h1>
@@ -138,7 +184,7 @@ class DetailProduct extends Component {
                                 disabled={qty === 1 ? true : false}
                                 onClick={this.handleMinus}
                             >
-                                <i className="fas fa-minus-circle"></i>
+                                <i class="fas fa-minus-circle"></i>
                             </Button>
                             <Form.Control
                                 style={{
@@ -158,10 +204,10 @@ class DetailProduct extends Component {
                                         ? "outline-secondary"
                                         : "outline-success"
                                 }
-                                disabled={qty === parseInt(product.total_stock) ? true : false}
+                                disabled={qty == product.total_stock ? true : false}
                                 onClick={this.handlePlus}
                             >
-                                <i className="fas fa-plus-circle"></i>
+                                <i class="fas fa-plus-circle"></i>
                             </Button>
                         </div>
                     </Modal.Body>
@@ -175,13 +221,13 @@ class DetailProduct extends Component {
                 <Toast
                     style={{
                         position: 'absolute',
-                        top:20,
-                        right:50,
+                        top: 20,
+                        right: 50,
                         width: "15rem"
                     }}
                     show={this.state.toast}
                     onClose={() => this.setState({ toast: false })}
-                delay={3000} autohide
+                    delay={3000} autohide
                 >
                     <Toast.Header>
                         <strong className="mr-auto">Notification</strong>
