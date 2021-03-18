@@ -138,7 +138,7 @@ class DetailProduct extends Component {
                                 disabled={qty === 1 ? true : false}
                                 onClick={this.handleMinus}
                             >
-                                <i class="fas fa-minus-circle"></i>
+                                <i className="fas fa-minus-circle"></i>
                             </Button>
                             <Form.Control
                                 style={{
@@ -158,10 +158,10 @@ class DetailProduct extends Component {
                                         ? "outline-secondary"
                                         : "outline-success"
                                 }
-                                disabled={qty == product.total_stock ? true : false}
+                                disabled={qty === parseInt(product.total_stock) ? true : false}
                                 onClick={this.handlePlus}
                             >
-                                <i class="fas fa-plus-circle"></i>
+                                <i className="fas fa-plus-circle"></i>
                             </Button>
                         </div>
                     </Modal.Body>
@@ -195,7 +195,7 @@ class DetailProduct extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        id: state.user.id_user
+        id: state.user.user.id_user
     }
 }
 

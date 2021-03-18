@@ -48,7 +48,7 @@ const Navigation = () => {
 						Register
 					</Nav.Link> */}
 					<Nav.Link as={Link} to="/cart">
-						<i class="fas fa-shopping-cart"></i>
+						<i className="fas fa-shopping-cart"></i>
 					</Nav.Link>
 					{user.id_user ? (
 						<Nav.Link as={Link} to="/login" onClick={() => dispatch(logout())}>

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Button, Table, Form,Modal } from 'react-bootstrap'
+import { Button, Table, Form, Modal } from "react-bootstrap";
 import Axios from "axios";
 
 class CartPage extends Component {
@@ -38,6 +38,18 @@ class CartPage extends Component {
         this.setState({ newQty: Number(this.state.newQty) + 1 })
 
     }
+    handleDelete = (index) => {
+		let tempCart = [...this.state.data];
+		let id_order = tempCart[index].id_order_details;
+
+		tempCart.splice(index, 1);
+
+		Axios.delete(`http://localhost:1000/cart/delCart/${id_order}`)
+			.then((res) => {
+				this.setState({ data: tempCart });
+			})
+			.catch((err) => console.log(err));
+	};
     changeQty = (e) => {
         this.setState({ newQty: e.target.value })
     }
@@ -114,8 +126,8 @@ class CartPage extends Component {
                     <td>{item.total.toLocaleString()}</td>
                     <td style={{ width: 170 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                            <Button variant="warning" onClick={() => this.setState({ selectedIndex: index, newQty: item.quantity })} ><i class="fas fa-edit"></i></Button>
-                            <Button variant="danger"><i class="fas fa-trash"></i></Button>
+                            <Button variant="warning" onClick={() => this.setState({ selectedIndex: index, newQty: item.quantity })} ><i className="fas fa-edit"></i></Button>
+                            <Button variant="danger" onClick={() => this.handleDelete(index)}><i className="fas fa-trash"></i></Button>
                         </div>
                     </td>
                 </tr>
@@ -173,18 +185,21 @@ class CartPage extends Component {
             </div>
         );
     }
+
 }
 
 const styles = {
-    total: {
-        backgroundColor: 'blue', fontSize: 20, color: 'white'
-    }
-}
+	total: {
+		backgroundColor: "blue",
+		fontSize: 20,
+		color: "white",
+	},
+};
 
 const mapStateToProps = (state) => {
-    return {
-        id: state.user.user.id_user,
+	return {
+		id: state.user.user.id_user,
 		username: state.user.user.username,
-    };
+	};
 };
 export default connect(mapStateToProps)(CartPage);
