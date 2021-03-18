@@ -44,7 +44,7 @@ class DetailProduct extends Component {
             );
         let cartData = {
             no_order: Date.now(),
-            id_user: this.props.id,
+            id_user: (this.props.id ? this.props.id : 2),
             id_product: product.id_product,
             quantity: qty,
             total: qty * product.price
