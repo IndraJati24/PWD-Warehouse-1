@@ -18,7 +18,7 @@ class CartPage extends Component {
     }
 
     componentDidMount() {
-        Axios.get(`http://localhost:1000/cart/getCart/${this.props.id ? this.props.id : 2}`)
+        Axios.get(`http://localhost:1000/cart/getCart/${this.props.id}`)
             .then((res) => {
                 this.setState({ data: res.data });
                 console.log(res.data)
@@ -85,7 +85,10 @@ class CartPage extends Component {
                                 <Button onClick={this.handleMinus} >
                                     <i className="fas fa-minus"></i>
                                 </Button>
-                                <Form.Control style={{ width: '100px' }} onChange={(e) => this.changeQty(e)} value={this.state.newQty} />
+                                <Form.Control style={{
+                                    textAlign: "center",
+                                    width:100
+                                }} onChange={(e) => this.changeQty(e)} value={this.state.newQty} />
                                 <Button onClick={() => this.handlePlus(item.total_stock)} >
                                     <i className="fas fa-plus"></i>
                                 </Button>
@@ -127,6 +130,7 @@ class CartPage extends Component {
     };
 
     render() {
+        console.log(this.state.data);
         return (
             <div style={{ padding: "10px 30px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -179,8 +183,8 @@ const styles = {
 
 const mapStateToProps = (state) => {
     return {
-        id: state.user.id_user,
-        username: state.user.username,
+        id: state.user.user.id_user,
+		username: state.user.user.username,
     };
 };
 export default connect(mapStateToProps)(CartPage);
