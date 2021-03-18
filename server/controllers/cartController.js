@@ -21,13 +21,24 @@ module.exports={
                 const result = await asyncQuery(addOrders)
             }
 
-            // insert into table order_details
-            const addDetail = `INSERT INTO order_details (no_order, id_product, quantity, total, warehouse) VALUES 
-                                (${db.escape(no_order)}, ${db.escape(id_product)}, ${db.escape(quantity)}, ${db.escape(total)},
-                                ${db.escape(1)})`
-            const result2 = await asyncQuery(addDetail)
+            const checkOrder_details = `SELECT * FROM order_details WHERE no_order = ${db.escape(no_order)} AND id_product = ${db.escape(id_product)}`
+            const check2 = await asyncQuery(checkOrder_details)
 
-            res.status(200).send('Add to cart success')
+            if (check2.length===0) {
+                // insert into table order_details
+                const addDetail = `INSERT INTO order_details (no_order, id_product, quantity, total, warehouse) VALUES 
+                                    (${db.escape(no_order)}, ${db.escape(id_product)}, ${db.escape(quantity)}, ${db.escape(total)},
+                                    ${db.escape(1)})`
+                const result2 = await asyncQuery(addDetail)
+    
+                res.status(200).send('Add to cart success')
+                
+            } else {
+                const updateDetail=`UPDATE order_details SET quantity=(quantity+${quantity}),total=(total+${total}) WHERE id_product= ${db.escape(id_product)} and no_order=${db.escape(no_order)}; `
+                const result3 = await asyncQuery(updateDetail)
+                res.status(200).send('Add to cart success')
+            }
+
         }
         catch (err) {
             console.log(err)
@@ -53,5 +64,21 @@ module.exports={
             console.log(err)
             res.status(400).send(err)
         }
-    }
+    },
+    editCart: async (req, res) => {
+        const id = Number(req.params.id)
+        const { quantity, total, no_order } = req.body
+
+        try {
+            const editQty = `UPDATE order_details SET quantity = ${db.escape(quantity)}, total = ${db.escape(total)}
+                            WHERE id_product = ${db.escape(id)} AND no_order = ${db.escape(no_order)}`
+            await asyncQuery(editQty)
+
+            res.status(200).send(`edit cart for id_product ${id} success`)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
 }
