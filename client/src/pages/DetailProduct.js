@@ -51,7 +51,7 @@ class DetailProduct extends Component {
                 idx=index
             }
         })
-
+        const date = new Date()
         if(cartFilter.length!==0){
             if (qty+cartFilter[0].quantity > parseInt(product.total_stock))
                 return alert(
@@ -61,6 +61,7 @@ class DetailProduct extends Component {
                 cart.splice(idx, 1, cartFilter[0])    
             let cartData = {
                 no_order: Date.now(),
+                date:`${date.getFullYear()}-${date.getMonth() +1}-${date.getDate()}`,
                 id_user: (this.props.id ? this.props.id : 2),
                 id_product: product.id_product,
                 quantity: qty,
@@ -80,6 +81,7 @@ class DetailProduct extends Component {
                 
             let cartData = {
                 no_order: Date.now(),
+                date:`${date.getFullYear()}-${date.getMonth() +1}-${date.getDate()}`,
                 id_user: (this.props.id ? this.props.id : 2),
                 id_product: product.id_product,
                 quantity: qty,

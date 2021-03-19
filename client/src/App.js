@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import { keepLogin } from "./action";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import History from "./pages/History"
 
 function App() {
   const dispatch = useDispatch()
@@ -30,6 +31,7 @@ function App() {
         <Route path="/cart" component={Cart} />
         <Route path="/forgot-password" component={ForgotPassword} />
         <Route path="/reset-password" component={ResetPassword} />
+        <Route path="/history" component={History} />
       </Switch>
     </>
   );

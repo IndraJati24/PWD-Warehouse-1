@@ -183,4 +183,19 @@ module.exports = {
       res.status(400).send(err);
     }
   },
+  updateData : async (req, res) => {
+    const { id_user, address, city} = req.body
+
+    try{
+      const updateDate =`update account set address= ${db.escape(address)}, city = ${db.escape(city)} 
+                        where id_user=${db.escape(id_user)}`
+      await asyncQuery(updateDate)
+        res.status(200).send("update sukes")
+    }
+    catch(err) {
+      console.log(err)
+      res.status(400).send(err)
+
+    }
+  }
 };

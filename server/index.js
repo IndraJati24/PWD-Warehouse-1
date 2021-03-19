@@ -18,9 +18,10 @@ db.connect((err) => {
   console.log(`database connected: ${db.threadId}`);
 });
 
-const {productRouter, userRouter,cartRouter}=require("./routes")
+const {productRouter, userRouter,cartRouter, orderRouter}=require("./routes")
 app.use("/product",productRouter);
 app.use('/user', userRouter);
 app.use('/cart', cartRouter);
+app.use('/order', orderRouter)
 
 app.listen(PORT, () => console.log("Listening on port:", PORT));
