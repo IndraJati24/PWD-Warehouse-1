@@ -5,7 +5,7 @@ const db = require('../database')
 
 module.exports={
     addCart: async (req, res) => {
-        let { no_order, id_user, id_product, quantity, total } = req.body
+        let { no_order, id_user, id_product, quantity, total, date } = req.body
         try {
             // check order user
             const checkOrder = `SELECT * FROM orders WHERE id_user = ${db.escape(id_user)} AND status = 1`
@@ -16,8 +16,8 @@ module.exports={
             if (check.length === 0) {
 
                 // insert into table orders
-                const addOrders = `INSERT INTO orders (no_order, id_user, status) VALUES
-                (${db.escape(no_order)}, ${db.escape(id_user)}, 1)`
+                const addOrders = `INSERT INTO orders (no_order, id_user, status, warehouse, date) VALUES
+                (${db.escape(no_order)}, ${db.escape(id_user)}, 1, 1, ${db.escape(date)})`
                 const result = await asyncQuery(addOrders)
             }
 
@@ -26,9 +26,8 @@ module.exports={
 
             if (check2.length===0) {
                 // insert into table order_details
-                const addDetail = `INSERT INTO order_details (no_order, id_product, quantity, total, warehouse) VALUES 
-                                    (${db.escape(no_order)}, ${db.escape(id_product)}, ${db.escape(quantity)}, ${db.escape(total)},
-                                    ${db.escape(1)})`
+                const addDetail = `INSERT INTO order_details (no_order, id_product, quantity, total) VALUES 
+                                    (${db.escape(no_order)}, ${db.escape(id_product)}, ${db.escape(quantity)}, ${db.escape(total)})`
                 const result2 = await asyncQuery(addDetail)
     
                 res.status(200).send('Add to cart success')
