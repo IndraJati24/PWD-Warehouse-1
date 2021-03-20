@@ -72,12 +72,32 @@ module.exports = {
 		try {
 			const updatePict = `UPDATE orders SET bukti_bayar = 'images/${req.file.filename}' 
                                 WHERE no_order = ${no_order}`
-            const result = await asyncQuery(updatePict)
+            await asyncQuery(updatePict)
 
-            res.status(200).send(result)
+			const updateStatus = `update orders set status = 3 where no_order = ${no_order}`
+			await asyncQuery(updateStatus)
+            res.status(200).send("update berhasil")
 		} catch (error) {
 			console.log(error);
 			res.status(200).send(400);
+		}
+	},
+	getOrder: async(req, res)=>{
+		const id = parseInt(req.params.id)
+		try{
+			const getOrder = `select * from orders o
+			join order_details od using(no_order)
+			join warehouse_product wp using(id_product) 
+			join product p using(id_product)
+			join order_status os on o.status = os.id_order_status
+			where id_warehouse = o.warehouse and id_user = ${db.escape(id)}`
+
+			const result = await asyncQuery(getOrder)
+			res.status(200).send(result)
+		}
+		catch(err){
+			console.log(err)
+			res.status(400).send(err)
 		}
 	}
 };
