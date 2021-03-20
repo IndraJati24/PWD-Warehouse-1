@@ -43,10 +43,10 @@ const Navigation = () => {
 					</Nav.Link>
 					<Nav.Link as={Link} to="/login" onClick={() => dispatch(logout())}>
 						Logout
-					</Nav.Link>
-					<Nav.Link as={Link} to="/register">
-						Register
-					</Nav.Link> */}
+					</Nav.Link>*/}
+					<Nav.Link as={Link} to="/history">
+						History
+					</Nav.Link> 
 					<Nav.Link as={Link} to="/cart">
 						<i className="fas fa-shopping-cart"></i>
 					</Nav.Link>

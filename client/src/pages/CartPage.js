@@ -246,6 +246,7 @@ class CartPage extends Component {
                                 modalCheckOut: false,
                                 history: true
                             })
+							alert("transaction success please check history menu")
                         // })
                         // .catch((err) => console.log(err));
 					})
@@ -257,7 +258,7 @@ class CartPage extends Component {
 	render() {
 		console.log(this.state.city);
 		let apiKey = "37603d38a85f4f36bda754c5aabfac4a";
-        if(this.state.history) return <Redirect to="/history"/>
+        if(this.state.history) return <Redirect to="/"/>
 		return (
 			<div style={{ padding: "10px 30px" }}>
 				<div style={{ display: "flex", justifyContent: "space-between" }}>
