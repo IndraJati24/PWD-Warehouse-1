@@ -11,6 +11,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(express.static('./public'))
 
 db.connect((err) => {
   if (err) return console.log(err);
