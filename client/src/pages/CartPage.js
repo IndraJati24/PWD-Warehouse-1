@@ -25,7 +25,7 @@ class CartPage extends Component {
 			getLocationUser: null,
 			toast: [false, ""],
 			city: null,
-            hisroty: false
+            history: false
 		};
 	}
 
@@ -37,7 +37,6 @@ class CartPage extends Component {
 					this.setState({ data: res.data });
 					// console.log(res.data);
 				})
-
 				.catch((err) => console.log(err));
 		}
 	};
@@ -225,18 +224,30 @@ class CartPage extends Component {
 			lng: getLocationUser.lng,
 		};
 
+        let invoice={
+            no_order: data[0].no_order,
+            alamat,
+            total_harga:this.totalPrice().toLocaleString(),
+            email:this.props.email,
+			tgl_transaksi:this.state.data[0].date
+        }
+
 		Axios.post(`http://localhost:1000/order/wareLoc`, gudang)
 			.then((res) => {
 				Axios.post(`http://localhost:1000/user/address`, updateAlamat)
 					.then((res) => {
-						this.setState({
-							invalidNama: false,
-							invalidTelepon: false,
-							invalidAlamat: false,
-							toast: [false, ""],
-							modalCheckOut: false,
-                            history: true
-						});
+                        // Axios.post("http://localhost:1000/cart/invoice",invoice)
+                        // .then((res)=>{
+                            this.setState({
+                                invalidNama: false,
+                                invalidTelepon: false,
+                                invalidAlamat: false,
+                                toast: [true, "Transaksi Sukses, Silahkan Lanjutkan ke Pembayaran..."],
+                                modalCheckOut: false,
+                                history: true
+                            })
+                        // })
+                        // .catch((err) => console.log(err));
 					})
 					.catch((err) => console.log(err));
 			})
@@ -244,6 +255,7 @@ class CartPage extends Component {
 	};
 
 	render() {
+		console.log(this.state.city);
 		let apiKey = "37603d38a85f4f36bda754c5aabfac4a";
         if(this.state.history) return <Redirect to="/history"/>
 		return (
@@ -253,6 +265,7 @@ class CartPage extends Component {
 					<Button
 						variant="success"
 						onClick={() => this.setState({ modalCheckOut: true })}
+						disabled={this.state.data.length===0 ? true : false}
 					>
 						Checkout
 					</Button>
@@ -356,9 +369,10 @@ class CartPage extends Component {
 									placeholder="Kota Provinsi"
 									apiKey={apiKey}
 									onSuggestionSelected={(event, { suggestion }) => {
+										console.log(suggestion);
 										this.setState({
 											getLocationUser: suggestion.geometry,
-											city: suggestion.components.city,
+											city: suggestion.formatted,
 										});
 									}}
 								/>
@@ -463,6 +477,7 @@ const mapStateToProps = (state) => {
 	return {
 		id: state.user.user.id_user,
 		username: state.user.user.username,
+        email:state.user.user.email
 	};
 };
 export default connect(mapStateToProps)(CartPage);
