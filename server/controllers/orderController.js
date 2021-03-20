@@ -99,5 +99,20 @@ module.exports = {
 			console.log(err)
 			res.status(400).send(err)
 		}
+	},
+	getAllOrder: async(req, res) => {
+		const id = parseInt(req.params.id)
+		try{
+			const getOrder = `select * from orders o
+			join order_status os on o.status = os.id_order_status 
+			where id_user = ${db.escape(id)}`
+
+			const result = await asyncQuery(getOrder)
+			res.status(200).send(result)
+		}
+		catch(err){
+			console.log(err)
+			res.status(400).send(err)
+		}
 	}
 };
