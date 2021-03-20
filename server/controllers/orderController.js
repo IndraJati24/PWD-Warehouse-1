@@ -63,4 +63,21 @@ module.exports = {
 			res.status(200).send(400);
 		}
 	},
+	uploadBuktiBayar:async(req,res)=>{
+		const no_order = parseInt(req.params.no_order)
+
+        // console.log('req file', req.file)
+
+        if (!req.file) return res.status(400).send('NO IMAGE')
+		try {
+			const updatePict = `UPDATE orders SET bukti_bayar = 'images/${req.file.filename}' 
+                                WHERE no_order = ${no_order}`
+            const result = await asyncQuery(updatePict)
+
+            res.status(200).send(result)
+		} catch (error) {
+			console.log(error);
+			res.status(200).send(400);
+		}
+	}
 };
