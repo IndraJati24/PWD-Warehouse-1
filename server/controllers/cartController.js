@@ -1,9 +1,12 @@
 const { asyncQuery, generateQuery } = require('../helpers/queryHelp')
 const db = require('../database')
+const handleBars = require("handlebars");
+const transporter = require("../helpers/nodemailer");
+const fs = require("fs");
 
 
-
-module.exports={
+const test_email = process.env.NODEMAILER_USER
+module.exports = {
     addCart: async (req, res) => {
         let { no_order, id_user, id_product, quantity, total, date } = req.body
         try {
@@ -24,16 +27,16 @@ module.exports={
             const checkOrder_details = `SELECT * FROM order_details WHERE no_order = ${db.escape(no_order)} AND id_product = ${db.escape(id_product)}`
             const check2 = await asyncQuery(checkOrder_details)
 
-            if (check2.length===0) {
+            if (check2.length === 0) {
                 // insert into table order_details
                 const addDetail = `INSERT INTO order_details (no_order, id_product, quantity, total) VALUES 
                                     (${db.escape(no_order)}, ${db.escape(id_product)}, ${db.escape(quantity)}, ${db.escape(total)})`
                 const result2 = await asyncQuery(addDetail)
-    
+
                 res.status(200).send('Add to cart success')
-                
+
             } else {
-                const updateDetail=`UPDATE order_details SET quantity=(quantity+${quantity}),total=(total+${total}) WHERE id_product= ${db.escape(id_product)} and no_order=${db.escape(no_order)}; `
+                const updateDetail = `UPDATE order_details SET quantity=(quantity+${quantity}),total=(total+${total}) WHERE id_product= ${db.escape(id_product)} and no_order=${db.escape(no_order)}; `
                 const result3 = await asyncQuery(updateDetail)
                 res.status(200).send('Add to cart success')
             }
@@ -44,7 +47,7 @@ module.exports={
             res.status(400).send(err)
         }
     },
-     getCart: async (req, res) => {
+    getCart: async (req, res) => {
         const id = (req.params.id)
         try {
             const getCart = `select *, sum(wp.stock) as total_stock from orders o
@@ -80,17 +83,40 @@ module.exports={
             res.status(400).send(err)
         }
     },
-    deleteCart: async (req,res)=>{
+    deleteCart: async (req, res) => {
         const id = (req.params.id)
-        try{
+        try {
             const delQuery = `DELETE FROM order_details where id_order_details = ${db.escape(id)}`
             await asyncQuery(delQuery)
 
             res.status(200).send('Delete Success')
         }
-        catch(err){
+        catch (err) {
             console.log(err)
             res.status(400).send(err)
+        }
+    },
+    invoice: async (req, res) => {
+        const { no_order, email,tgl_transaksi,alamat,total_harga } = req.body
+        try {
+            const option = {
+                from: `Admin <${test_email}>`,
+                to: email,
+                subject: "Invoice",
+            };
+
+            const verifyFile = fs
+                .readFileSync("./email/invoice.html")
+                .toString();
+            const template = handleBars.compile(verifyFile);
+
+            option.html = template({ no_order, tgl_transaksi,alamat,total_harga });
+
+            const sendEmail = await transporter.sendMail(option);
+            res.status(200).send(sendEmail.response);
+        } catch (error) {
+            console.log(error)
+            res.status(400).send(error)
         }
     }
 }
