@@ -54,6 +54,7 @@ module.exports = {
 			}
 
 			let gudangTerdekat = distanceWarehouse.sort(urutDistance);
+			
 			const updateWarehouse = `update orders set warehouse = ${db.escape(gudangTerdekat[0].id)}, status= 2 
                                     where no_order = ${db.escape(no_order)}`
 			await asyncQuery(updateWarehouse)
@@ -77,9 +78,10 @@ module.exports = {
 			const updateStatus = `update orders set status = 3 where no_order = ${no_order}`
 			await asyncQuery(updateStatus)
 
-			const warehouseLoc = `select w.id_warehouse,w.name,w.latitude,w.longitude,w.location,wp.id_product,wp.stock from warehouse w
+			const warehouseLoc = `select w.id_warehouse,w.name,w.latitude,w.longitude,w.location,wp.id_product,wp.stock, wp.stock_belum_kirim from warehouse w
 			join warehouse_product wp on w.id_warehouse=wp.id_warehouse;`
 			let warehouse = await asyncQuery(warehouseLoc);
+			// console.log("lokasi gudang", warehouse)
 
 			const Gudang=`select * from warehouse; `
 			let semuaGudang = await asyncQuery(Gudang);
@@ -89,7 +91,7 @@ module.exports = {
 			join account a on a.id_user=o.id_user
 			where o.no_order=${db.escape(no_order)};`
 			let cart = await asyncQuery(getLocationUserandProduct);
-			console.log(cart);
+			console.log("belanja",cart);
 
 			function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
 				var R = 6371; // Radius of the earth in km
@@ -116,8 +118,8 @@ module.exports = {
 					id_warehouse: item.id_warehouse,
 					name: item.name,
 					distance: getDistanceFromLatLonInKm(
-						parseInt(cart[0].lat),
-						parseInt(cart[0].lng),
+						cart[0].lat,
+						cart[0].lng,
 						item.latitude,
 						item.longitude
 					)
@@ -133,31 +135,35 @@ module.exports = {
 				}
 				return 0;
 			}
-
+			
 			let gudangTerdekat = distanceWarehouse.sort(urutDistance);
-			console.log(gudangTerdekat);
+		
 			 gudangTerdekat.forEach(async(gudang) => {
 				 warehouse.forEach(async(data)=>{
 					if(gudang.id_warehouse==data.id_warehouse){
+						
 						cart.forEach(async(cart) => {
+						
 							if (data.id_warehouse == cart.warehouse && data.id_product == cart.id_product) {
 								if (cart.quantity > data.stock)  {
 									let sisa = cart.quantity - data.stock
-		
-									let updateStock = `update warehouse_product set stock=0 where id_product=${db.escape(cart.id_product)}
+									
+									let updateStock = `update warehouse_product set stock=0, stock_masuk=${db.escape(sisa)}, stock_belum_kirim=${db.escape(cart.quantity)}, stock_operasional=${db.escape(data.stock + data.stock_belum_kirim)} where id_product=${db.escape(cart.id_product)}
 													  and id_warehouse=${db.escape(cart.warehouse)}`
-									let update = await asyncQuery(updateStock)
+									await asyncQuery(updateStock)
 		
 									for (let x = 1; x < gudangTerdekat.length; x++) {
 										let dataBaru=warehouse.filter(item=> item.id_warehouse== gudangTerdekat[x].id_warehouse && item.id_product==cart.id_product )
+										
 										if (sisa > dataBaru[0].stock) {
 											sisa -= dataBaru[0].stock
-											let updateStock = `update warehouse_product set stock=0 where id_product=${db.escape(dataBaru[0].id_product)}
+									
+											let updateStock = `update warehouse_product set stock=0, stock_keluar=${db.escape(dataBaru[0].stock)} where id_product=${db.escape(dataBaru[0].id_product)}
 													  and id_warehouse=${db.escape(dataBaru[0].id_warehouse)}`
 											let update = await asyncQuery(updateStock)
 										}else{
 
-											let updateStock = `update warehouse_product set stock=${db.escape(dataBaru[0].stock-sisa)} where id_product=${db.escape(dataBaru[0].id_product)}
+											let updateStock = `update warehouse_product set stock=${db.escape(dataBaru[0].stock-sisa)}, stock_keluar = ${db.escape(sisa)} where id_product=${db.escape(dataBaru[0].id_product)}
 													  and id_warehouse=${db.escape(dataBaru[0].id_warehouse)}`
 											let update = await asyncQuery(updateStock)
 											break
@@ -165,10 +171,11 @@ module.exports = {
 									}
 		
 								} else {
-		
-									let updateStock = `update warehouse_product set stock=${db.escape(data.stock - cart.quantity)} where id_product=${db.escape(cart.id_product)}
+									
+									let updateStock = `update warehouse_product set stock=${db.escape(data.stock - cart.quantity)}, stock_belum_kirim=${db.escape(data.stock_belum_kirim + cart.quantity)} where id_product=${db.escape(cart.id_product)}
 													  and id_warehouse=${db.escape(cart.warehouse)}`
-									let update = await asyncQuery(updateStock)
+									await asyncQuery(updateStock)
+
 								}
 							}
 						})
@@ -176,10 +183,6 @@ module.exports = {
 				 })
 				
 			})
-
-
-
-
 
 			res.status(200).send("update berhasil")
 		} catch (error) {
@@ -216,6 +219,62 @@ module.exports = {
 			res.status(200).send(result)
 		}
 		catch (err) {
+			console.log(err)
+			res.status(400).send(err)
+		}
+	},
+	cancelPaymentPending : async(req, res) => {
+		const id = parseInt(req.params.id)
+		
+		try{
+			const cancelOrder = `update orders set status = 6 where no_order =${db.escape(id)}`
+			await asyncQuery(cancelOrder)
+			res.status(200).send("cancel berhasil")
+		}
+		catch(err) {
+			console.log(err)
+			res.status(400).send(err)
+		}
+	},
+	cancelOrderConfirm: async(req, res) => {
+		const id = parseInt(req.params.id)
+		try{
+			const cancelOrder = `update orders set status = 6 where no_order =${db.escape(id)}`
+			await asyncQuery(cancelOrder)
+
+			const getOrders = `select * from orders o
+			join order_details od using (no_order)
+			join warehouse_product wp using(id_product)
+			where o.no_order = ${id} and wp.id_warehouse = o.warehouse`
+			const result = await asyncQuery(getOrders)
+
+			const gudang = `select * from warehouse_product where id_warehouse = ${result[0].warehouse}`
+			const result2 = await asyncQuery(gudang)
+			result.forEach(async(cart)=>{
+				result2.forEach(async(gudang)=>{
+					if(cart.id_product === gudang.id_product && cart.warehouse === gudang.id_warehouse){
+						const updateStock = `update warehouse_product set stock=${gudang.stock + cart.quantity}, stock_belum_kirim=${gudang.stock_belum_kirim - cart.quantity}`
+						await asyncQuery(updateStock)
+					}
+				})
+			})
+
+			res.status(200).send("update berhasil")
+		}
+		catch(err) {
+			console.log(err)
+			res.status(400).send(err)
+		}
+	},
+	orderArrived: async(req, res) => {
+		const id = parseInt(req.params.id)
+		try{
+			const arrivedOrder = `update orders set status = 5 where no_order =${db.escape(id)}`
+			await asyncQuery(arrivedOrder)
+
+			res.status(200).send("update berhasil")
+		}
+		catch(err){
 			console.log(err)
 			res.status(400).send(err)
 		}

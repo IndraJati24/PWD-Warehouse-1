@@ -11,6 +11,7 @@ import {
 	Card,
 	Table,
 } from "react-bootstrap";
+import {Redirect} from "react-router-dom"
 import { useSelector } from "react-redux";
 import axios from "axios";
 
@@ -24,6 +25,8 @@ const History = () => {
 	const [status, setStatus] = useState("");
 	const [orderIdHistory, setOrderIdHistory] = useState(null);
     const [index, setIndex] = useState(null)
+	const [modalCancel, setModalCancel] = useState(false)
+	const [modalCancelOrder, setModalCancelOrder] = useState(false)
 
 	const { id } = useSelector((state) => {
 		return {
@@ -97,6 +100,47 @@ const History = () => {
         setOrderIdHistory(idOrder)
         setIndex(idx) 
     }
+	const renderModalCancel = () => {
+		return(
+			<Modal show={modalCancel} onHide={()=> setModalCancel(false)}>
+        		<Modal.Header closeButton>
+          		<Modal.Title>Warning</Modal.Title>
+        		</Modal.Header>
+        	<Modal.Body>Are You Sure cancel this order?</Modal.Body>
+        	<Modal.Footer>
+          		<Button variant="secondary" onClick={()=> setModalCancel(false)}>
+            	Close
+          		</Button>
+          	<Button variant="primary" onClick={handleCancelConfirm}>
+            Yes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+		)
+	}
+
+	const handleCancel=(idx)=>{
+		let idOrder = data[idx].no_order
+        setModalCancel(true)
+        setOrderIdHistory(idOrder)
+        setIndex(idx)
+	}
+
+	const handleCancelConfirm=()=>{
+		let orderId = orderIdHistory
+		
+		const idxData = index
+        const temp = [...data]
+        temp.splice(idxData, 1)
+ 
+		axios.post(`http://localhost:1000/order/cancelPaymentPending/${orderId}`)
+		.then((res)=>{
+			setData(temp)
+			setModalCancel(false)
+		})
+		.catch((err)=> console.log(err))
+	}
+
 	const renderModal = () => {
 		return (
 			<Modal show={show} onHide={() => setShow(false)}>
@@ -142,11 +186,66 @@ const History = () => {
 			setData(temp);
 			setShow(false);
 			alert("Upload Success");
+			if(show === false) return <Redirect to="/history"/>
 		} catch (error) {
 			// console.log(error.response.data)
             alert(error.response.data)
 		}
 	};
+
+	const handleOpenModalOrder = (idx) => {
+		let idOrder = data[idx].no_order
+        setModalCancelOrder(true)
+        setOrderIdHistory(idOrder)
+        setIndex(idx)
+	}
+
+	const renderModalCancelOrder = () => {
+		return(
+			<Modal show={modalCancelOrder} onHide={()=> setModalCancelOrder(false)}>
+        		<Modal.Header closeButton>
+          		<Modal.Title>Warning</Modal.Title>
+        		</Modal.Header>
+        	<Modal.Body>Are You Sure cancel this order?</Modal.Body>
+        	<Modal.Footer>
+          		<Button variant="secondary" onClick={()=> setModalCancelOrder(false)}>
+            	Close
+          		</Button>
+          	<Button variant="primary" onClick={handleCancelConfirmOrder}>
+            Yes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+		)
+	}
+
+	const handleCancelConfirmOrder=()=>{
+		let orderId = orderIdHistory
+	
+		const idxData = index
+        const temp = [...data]
+        temp.splice(idxData, 1)
+ 
+		axios.post(`http://localhost:1000/order/cancelOrderConfirm/${orderId}`)
+		.then((res)=>{
+			setData(temp)
+			setModalCancelOrder(false)
+		})
+		.catch((err)=> console.log(err))
+	}
+
+	const handleArrived =(idx)=>{
+		let idOrder = data[idx].no_order
+		const temp = [...data]
+        temp.splice(idxData, 1)
+       
+		axios.post(`http://localhost:1000/order/arrived/${idOrder}`)
+		.then((res)=>{
+			setData(temp)
+		})
+		.catch((err)=> console.log(err))
+	}
+
 	return (
 	<div style={{ padding: 30 }}>
 		<Tab.Container id="left-tabs-example" defaultActiveKey="5">
@@ -185,10 +284,14 @@ const History = () => {
 													<Accordion.Toggle as={Button} variant="link" onClick={() => setOrderIdHistory(item.no_order)} eventKey={index + 1}>
 														{item.no_order}
 													</Accordion.Toggle>
+													<div>
+													<Button variant="danger" onClick={()=> handleCancel(index)}>Cancel</Button>
+													{renderModalCancel()}
 													<Button variant="primary" onClick={()=>handleOpenModal(index)}>
 														Upload your payment here
 													</Button>
 													{renderModal()}
+													</div>
 												</Card.Header>
 												<Accordion.Collapse eventKey={index + 1}>
 													<Table striped bordered hover>
@@ -222,9 +325,13 @@ const History = () => {
 									return (
 										<Accordion key={index}>
 											<Card>
-												<Accordion.Toggle as={Card.Header} onClick={() => setOrderIdHistory(item.no_order)} eventKey={index + 1}>
-													{item.no_order}, date : {item.date}
+												<Card.Header>
+												<Accordion.Toggle as={Button} variant="link" onClick={() => setOrderIdHistory(item.no_order)} eventKey={index + 1}>
+													{item.no_order}, date : {item.date} 
 												</Accordion.Toggle>
+												<Button onClick={()=> handleOpenModalOrder(index)} variant="danger">Cancel</Button>
+												{renderModalCancelOrder()}
+												</Card.Header>
 													<Accordion.Collapse eventKey={index + 1}>
 														<Table striped bordered hover>
 															<thead>
@@ -257,9 +364,12 @@ const History = () => {
 									return (
 										<Accordion key={index}>
 											<Card>
-												<Accordion.Toggle as={Card.Header} onClick={() => setOrderIdHistory(item.no_order)} eventKey={index + 1}>
+												<Card.Header>
+												<Accordion.Toggle as={Button} variant="link" onClick={() => setOrderIdHistory(item.no_order)} eventKey={index + 1}>
 													{item.no_order}, date : {item.date}
 												</Accordion.Toggle>
+													<Button onClick={()=> handleArrived(index)}variant="success">Arrived</Button>
+												</Card.Header>
 													<Accordion.Collapse eventKey={index + 1}>
 														<Table striped bordered hover>
 															<thead>
