@@ -184,10 +184,11 @@ module.exports = {
     }
   },
   updateData : async (req, res) => {
-    const { id_user, address, city} = req.body
+    const { id_user, address, city,lat,lng} = req.body
 
     try{
-      const updateDate =`update account set address= ${db.escape(address)}, city = ${db.escape(city)} 
+      const updateDate =`update account set address= ${db.escape(address)}, city = ${db.escape(city)},
+                        lat=${db.escape(lat)},lng=${db.escape(lng)}
                         where id_user=${db.escape(id_user)}`
       await asyncQuery(updateDate)
         res.status(200).send("update sukes")

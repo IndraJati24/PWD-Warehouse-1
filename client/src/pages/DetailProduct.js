@@ -53,7 +53,7 @@ class DetailProduct extends Component {
         })
         const date = new Date()
         if(cartFilter.length!==0){
-            if (qty+cartFilter[0].quantity > parseInt(product.total_stock))
+            if (parseInt(qty)+cartFilter[0].quantity > parseInt(product.total_stock))
                 return alert(
                     `The amount exceeds from stock, current stock is ${product.total_stock} `
                 );
@@ -74,7 +74,7 @@ class DetailProduct extends Component {
                 })
                 .catch((err) => console.log(err));
         }else{
-            if (qty > parseInt(product.total_stock))
+            if (parseInt(qty) > parseInt(product.total_stock))
                 return alert(
                     `The amount exceeds from stock, current stock is ${product.total_stock} `
                 );

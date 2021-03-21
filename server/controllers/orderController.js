@@ -16,9 +16,9 @@ module.exports = {
 				var a =
 					Math.sin(dLat / 2) * Math.sin(dLat / 2) +
 					Math.cos(deg2rad(lat1)) *
-						Math.cos(deg2rad(lat2)) *
-						Math.sin(dLon / 2) *
-						Math.sin(dLon / 2);
+					Math.cos(deg2rad(lat2)) *
+					Math.sin(dLon / 2) *
+					Math.sin(dLon / 2);
 				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 				var d = R * c; // Distance in km
 				return d;
@@ -54,37 +54,142 @@ module.exports = {
 			}
 
 			let gudangTerdekat = distanceWarehouse.sort(urutDistance);
-            const updateWarehouse = `update orders set warehouse = ${db.escape(gudangTerdekat[0].id)}, status= 2 
+			const updateWarehouse = `update orders set warehouse = ${db.escape(gudangTerdekat[0].id)}, status= 2 
                                     where no_order = ${db.escape(no_order)}`
-            await asyncQuery(updateWarehouse)
+			await asyncQuery(updateWarehouse)
 			res.status(200).send("update sukses");
 		} catch (err) {
 			console.log(err);
 			res.status(200).send(400);
 		}
 	},
-	uploadBuktiBayar:async(req,res)=>{
+	uploadBuktiBayar: async (req, res) => {
 		const no_order = parseInt(req.params.no_order)
 
-        // console.log('req file', req.file)
+		// console.log('req file', req.file)
 
-        if (!req.file) return res.status(400).send('NO IMAGE')
+		if (!req.file) return res.status(400).send('NO IMAGE')
 		try {
 			const updatePict = `UPDATE orders SET bukti_bayar = 'images/${req.file.filename}' 
                                 WHERE no_order = ${no_order}`
-            await asyncQuery(updatePict)
+			await asyncQuery(updatePict)
 
 			const updateStatus = `update orders set status = 3 where no_order = ${no_order}`
 			await asyncQuery(updateStatus)
-            res.status(200).send("update berhasil")
+
+			const warehouseLoc = `select w.id_warehouse,w.name,w.latitude,w.longitude,w.location,wp.id_product,wp.stock from warehouse w
+			join warehouse_product wp on w.id_warehouse=wp.id_warehouse;`
+			let warehouse = await asyncQuery(warehouseLoc);
+
+			const Gudang=`select * from warehouse; `
+			let semuaGudang = await asyncQuery(Gudang);
+
+			const getLocationUserandProduct = `select od.id_order_details,od.no_order,od.id_product,od.quantity,o.warehouse,a.lat,a.lng from order_details od
+			join orders o on o.no_order=od.no_order
+			join account a on a.id_user=o.id_user
+			where o.no_order=${db.escape(no_order)};`
+			let cart = await asyncQuery(getLocationUserandProduct);
+			console.log(cart);
+
+			function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+				var R = 6371; // Radius of the earth in km
+				var dLat = deg2rad(lat2 - lat1); // deg2rad below
+				var dLon = deg2rad(lon2 - lon1);
+				var a =
+					Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+					Math.cos(deg2rad(lat1)) *
+					Math.cos(deg2rad(lat2)) *
+					Math.sin(dLon / 2) *
+					Math.sin(dLon / 2);
+				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+				var d = R * c; // Distance in km
+				return d;
+			}
+
+			function deg2rad(deg) {
+				return deg * (Math.PI / 180);
+			}
+
+			let distanceWarehouse = [];
+			semuaGudang.map((item) => {
+				return distanceWarehouse.push({
+					id_warehouse: item.id_warehouse,
+					name: item.name,
+					distance: getDistanceFromLatLonInKm(
+						parseInt(cart[0].lat),
+						parseInt(cart[0].lng),
+						item.latitude,
+						item.longitude
+					)
+				});
+			});
+
+			function urutDistance(a, b) {
+				if (a.distance < b.distance) {
+					return -1;
+				}
+				if (a.distance > b.distance) {
+					return 1;
+				}
+				return 0;
+			}
+
+			let gudangTerdekat = distanceWarehouse.sort(urutDistance);
+			console.log(gudangTerdekat);
+			 gudangTerdekat.forEach(async(gudang) => {
+				 warehouse.forEach(async(data)=>{
+					if(gudang.id_warehouse==data.id_warehouse){
+						cart.forEach(async(cart) => {
+							if (data.id_warehouse == cart.warehouse && data.id_product == cart.id_product) {
+								if (cart.quantity > data.stock)  {
+									let sisa = cart.quantity - data.stock
+		
+									let updateStock = `update warehouse_product set stock=0 where id_product=${db.escape(cart.id_product)}
+													  and id_warehouse=${db.escape(cart.warehouse)}`
+									let update = await asyncQuery(updateStock)
+		
+									for (let x = 1; x < gudangTerdekat.length; x++) {
+										let dataBaru=warehouse.filter(item=> item.id_warehouse== gudangTerdekat[x].id_warehouse && item.id_product==cart.id_product )
+										if (sisa > dataBaru[0].stock) {
+											sisa -= dataBaru[0].stock
+											let updateStock = `update warehouse_product set stock=0 where id_product=${db.escape(dataBaru[0].id_product)}
+													  and id_warehouse=${db.escape(dataBaru[0].id_warehouse)}`
+											let update = await asyncQuery(updateStock)
+										}else{
+
+											let updateStock = `update warehouse_product set stock=${db.escape(dataBaru[0].stock-sisa)} where id_product=${db.escape(dataBaru[0].id_product)}
+													  and id_warehouse=${db.escape(dataBaru[0].id_warehouse)}`
+											let update = await asyncQuery(updateStock)
+											break
+										}
+									}
+		
+								} else {
+		
+									let updateStock = `update warehouse_product set stock=${db.escape(data.stock - cart.quantity)} where id_product=${db.escape(cart.id_product)}
+													  and id_warehouse=${db.escape(cart.warehouse)}`
+									let update = await asyncQuery(updateStock)
+								}
+							}
+						})
+					}
+				 })
+				
+			})
+
+
+
+
+
+			res.status(200).send("update berhasil")
 		} catch (error) {
 			console.log(error);
 			res.status(200).send(400);
 		}
 	},
-	getOrder: async(req, res)=>{
+	getOrder: async (req, res) => {
 		const id = parseInt(req.params.id)
-		try{
+		try {
 			const getOrder = `select * from orders o
 			join order_details od using(no_order)
 			join warehouse_product wp using(id_product) 
@@ -95,14 +200,14 @@ module.exports = {
 			const result = await asyncQuery(getOrder)
 			res.status(200).send(result)
 		}
-		catch(err){
+		catch (err) {
 			console.log(err)
 			res.status(400).send(err)
 		}
 	},
-	getAllOrder: async(req, res) => {
+	getAllOrder: async (req, res) => {
 		const id = parseInt(req.params.id)
-		try{
+		try {
 			const getOrder = `select * from orders o
 			join order_status os on o.status = os.id_order_status 
 			where id_user = ${db.escape(id)}`
@@ -110,7 +215,7 @@ module.exports = {
 			const result = await asyncQuery(getOrder)
 			res.status(200).send(result)
 		}
-		catch(err){
+		catch (err) {
 			console.log(err)
 			res.status(400).send(err)
 		}
