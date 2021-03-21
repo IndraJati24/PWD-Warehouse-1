@@ -237,7 +237,7 @@ const History = () => {
 	const handleArrived =(idx)=>{
 		let idOrder = data[idx].no_order
 		const temp = [...data]
-        temp.splice(idxData, 1)
+        temp.splice(idx, 1)
        
 		axios.post(`http://localhost:1000/order/arrived/${idOrder}`)
 		.then((res)=>{
