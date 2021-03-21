@@ -14,6 +14,7 @@ import { keepLogin } from "./action";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import History from "./pages/History"
+import Dashboard from "./pages/admin/Dashboard";
 
 function App() {
   const dispatch = useDispatch()
@@ -32,6 +33,8 @@ function App() {
         <Route path="/forgot-password" component={ForgotPassword} />
         <Route path="/reset-password" component={ResetPassword} />
         <Route path="/history" component={History} />
+
+        <Route path="/admin/dashboard" component={Dashboard} />
       </Switch>
     </>
   );
