@@ -214,6 +214,8 @@ class CartPage extends Component {
 			id_user: this.props.id,
 			address: alamat,
 			city: city,
+			lat: getLocationUser.lat,
+			lng: getLocationUser.lng,
 		};
 
 		// console.log(updateAlamat)
