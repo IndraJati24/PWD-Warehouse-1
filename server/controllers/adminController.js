@@ -117,4 +117,17 @@ async function deleteCategory(req, res) {
     }
 }
 
-module.exports = { getProducts, addProduct, editProduct, deleteProduct, getCategories, addCategory, editCategory, deleteCategory }
+async function stockOperasional(req,res){
+    try {
+        const queryStockOperasional=`select wp.*,p.name nama_product,p.image,w.name from warehouse_product wp
+        join product p on wp.id_product=p.id_product
+        join warehouse w on wp.id_warehouse=w.id_warehouse;`
+        const result= await asyncQuery(queryStockOperasional)
+
+        res.status(200).send(result)
+    } catch (error) {
+        res.status(400).send(error)
+    }
+}
+
+module.exports = { getProducts, addProduct, editProduct, deleteProduct, getCategories, addCategory, editCategory, deleteCategory,stockOperasional }
