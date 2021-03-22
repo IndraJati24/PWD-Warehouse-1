@@ -3,6 +3,7 @@ import { Col, Nav, Row, Tab, Jumbotron, Container, Navbar } from 'react-bootstra
 import Category from './Category'
 import Order from './Order'
 import Product from './Product'
+import StockOperasional from './StockOperasional'
 
 function Dashboard() {
     return (
@@ -22,6 +23,9 @@ function Dashboard() {
                         <Nav.Item>
                             <Nav.Link eventKey="order">Order</Nav.Link>
                         </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link eventKey="stock-operasional">Stock Operasional</Nav.Link>
+                        </Nav.Item>
                     </Nav>
                 </Col>
                 <Col sm={10}>
@@ -34,6 +38,9 @@ function Dashboard() {
                         </Tab.Pane>
                         <Tab.Pane eventKey="order">
                             <Order />
+                        </Tab.Pane>
+                        <Tab.Pane eventKey="stock-operasional">
+                            <StockOperasional />
                         </Tab.Pane>
                     </Tab.Content>
                 </Col>
