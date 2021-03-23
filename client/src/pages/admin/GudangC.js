@@ -12,6 +12,26 @@ export default function GudnagC({data}) {
         dataField: 'nama_product',
         text: 'Name Product',
         sort: true
+    },{
+        dataField: 'stock',
+        text: 'Stock DiWeb',
+        sort: true,
+    },{
+        dataField: 'stock_masuk',
+        text: 'Stock Masuk',
+        sort: true,
+    }, {
+        dataField: 'stock_keluar',
+        text: 'Stock keluar',
+        sort: true,
+    },{
+        dataField: 'stock_belum_kirim',
+        text: 'Stock belum_dikirim',
+        sort: true,
+    },{
+        dataField: 'stock_sudah_kirim',
+        text: 'Stock sudah dikirm',
+        sort: true,
     }, {
         dataField: 'stock_operasional',
         text: 'Stock Operasional',

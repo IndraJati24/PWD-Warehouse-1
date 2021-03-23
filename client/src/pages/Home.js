@@ -151,7 +151,7 @@ export default function Home() {
         return (
             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {data.slice(indexOfFirstItem, indexOfLastItem).map((item, index) => {
-                    if (item.stock === 0) return
+             
                     return (
                         <Card style={{ width: '12.5rem',margin:"1rem 1rem"}} key={index}>
                             <Card.Img variant="top" src={item.image} style={{height:"13rem"}}  />

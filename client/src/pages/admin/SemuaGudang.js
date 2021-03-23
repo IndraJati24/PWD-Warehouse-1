@@ -3,7 +3,8 @@ import { Image } from "react-bootstrap";
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-export default function GudnagB({ data }) {
+export default function GudnagC({data}) {
+    console.log(data);
     const columnsOption = [{
         dataField: 'id_product',
         text: 'ID',
@@ -12,28 +13,8 @@ export default function GudnagB({ data }) {
         dataField: 'nama_product',
         text: 'Name Product',
         sort: true
-    },{
-        dataField: 'stock',
-        text: 'Stock DiWeb',
-        sort: true,
-    },{
-        dataField: 'stock_masuk',
-        text: 'Stock Masuk',
-        sort: true,
     }, {
-        dataField: 'stock_keluar',
-        text: 'Stock keluar',
-        sort: true,
-    },{
-        dataField: 'stock_belum_kirim',
-        text: 'Stock belum_dikirim',
-        sort: true,
-    },{
-        dataField: 'stock_sudah_kirim',
-        text: 'Stock sudah dikirm',
-        sort: true,
-    }, {
-        dataField: 'stock_operasional',
+        dataField: 'total',
         text: 'Stock Operasional',
         sort: true,
     }, {
@@ -43,7 +24,7 @@ export default function GudnagB({ data }) {
     }]
     return (
         <div>
-            <h3 style={{ margin: "1rem 1rem" }}>Gudang B</h3>
+            <h3 style={{ margin: "1rem 1rem" }}>Gudang C</h3>
             <BootstrapTable keyField="id_product" data={data ? data : []} columns={columnsOption} pagination={paginationFactory()} />
 
         </div>
