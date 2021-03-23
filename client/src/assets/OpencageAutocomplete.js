@@ -3,7 +3,7 @@ import Autosuggest from 'react-autosuggest';
 // import * as Opencage from 'opencage-api-client';
 import Opencage from 'opencage-api-client/dist/opencage-api.min';
 import PropTypes from 'prop-types';
-
+import debounce from "lodash.debounce";
 import './opencage.css';
 
 class OpencageAutocomplete extends Component {
@@ -50,7 +50,7 @@ class OpencageAutocomplete extends Component {
     });
   }
 
-  fetchSuggestions(value) {
+  fetchSuggestions=debounce((value)=>{
     Opencage.geocode({
       q: value,
       key: this.props.apiKey,
@@ -73,7 +73,7 @@ class OpencageAutocomplete extends Component {
         // eslint-disable-next-line
         console.log('[OCA] error', error.message);
       });
-  }
+  },700)
 
   onSuggestionsFetchRequested({ value }) {
     this.fetchSuggestions(value);

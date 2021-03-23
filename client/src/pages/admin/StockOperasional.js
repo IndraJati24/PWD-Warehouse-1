@@ -5,15 +5,19 @@ import { Jumbotron, Container, Tabs, Tab } from "react-bootstrap";
 import GudangA from "./GudangA";
 import GudangB from "./GudangB";
 import GudangC from "./GudangC";
+import SemuaGudang from "./SemuaGudang";
 export default function StockOperasional() {
     const [key, setKey] = useState("gudangA")
     const [data, setData] = useState([])
+    const [data2, setData2] = useState([])
 
     useEffect(() => {
         const getData=async()=>{
             try {
                 const res = await axios.get('http://localhost:1000/admin/stockOperasional')
+                const res2 = await axios.get('http://localhost:1000/admin/stockOperasionalAll')
                 setData(res.data)
+                setData2(res2.data)
             } catch (error) {
                 console.log(error);
             }
@@ -41,6 +45,9 @@ export default function StockOperasional() {
                     </Tab>
                     <Tab eventKey="gudangC" title="Gudang C" >
                         <GudangC data={gudangC} />
+                    </Tab>
+                    <Tab eventKey="allGudang" title="All Gudang" >
+                        <SemuaGudang data={data2} />
                     </Tab>
                 </Tabs>
             </Container>

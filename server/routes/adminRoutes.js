@@ -1,7 +1,7 @@
 const router = require("express").Router();
 
 const { adminController: { getProducts, addProduct, editProduct, deleteProduct,
-    getCategories, addCategory, editCategory, deleteCategory,stockOperasional } } = require("../controllers");
+    getCategories, addCategory, editCategory, deleteCategory,stockOperasional,stockOperasionalAll } } = require("../controllers");
 
 router.get('/products', getProducts);
 router.post('/products', addProduct);
@@ -15,5 +15,6 @@ router.delete('/categories', deleteCategory)
 
 
 router.get('/stockOperasional',stockOperasional)
+router.get('/stockOperasionalAll',stockOperasionalAll)
 
 module.exports = router;

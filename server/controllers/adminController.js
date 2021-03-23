@@ -117,6 +117,7 @@ async function deleteCategory(req, res) {
     }
 }
 
+//Stock operasional per gudang
 async function stockOperasional(req,res){
     try {
         const queryStockOperasional=`select wp.*,p.name nama_product,p.image,w.name from warehouse_product wp
@@ -130,4 +131,18 @@ async function stockOperasional(req,res){
     }
 }
 
-module.exports = { getProducts, addProduct, editProduct, deleteProduct, getCategories, addCategory, editCategory, deleteCategory,stockOperasional }
+//Stock operasional seluruh gudang
+async function stockOperasionalAll(req,res){
+    try {
+        const queryStockOperasional=`select wp.*,p.name nama_product,p.image,w.name,sum(wp.stock_operasional) total from warehouse_product wp
+        join product p on wp.id_product=p.id_product
+        join warehouse w on wp.id_warehouse=w.id_warehouse group by wp.id_product;`
+        const result= await asyncQuery(queryStockOperasional)
+
+        res.status(200).send(result)
+    } catch (error) {
+        res.status(400).send(error)
+    }
+}
+
+module.exports = { getProducts, addProduct, editProduct, deleteProduct, getCategories, addCategory, editCategory, deleteCategory,stockOperasional,stockOperasionalAll }
