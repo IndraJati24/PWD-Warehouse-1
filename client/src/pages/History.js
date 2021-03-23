@@ -1,20 +1,10 @@
 import React, { useState } from "react";
-import {
-	Button,
-	Modal,
-	Form,
-	Tab,
-	Nav,
-	Col,
-	Row,
-	Accordion,
-	Card,
-	Table,
-} from "react-bootstrap";
-import {Redirect} from "react-router-dom"
+import {Button, Modal, Form, Tab, Nav, Col, Row, Accordion, Card, Table, Image} from "react-bootstrap";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import images from "../assets/images/no-image.png"
 
+const URL_IMG = 'http://localhost:1000/'
 const History = () => {
 	const [show, setShow] = useState(false);
 	const [Image, setImage] = useState(null);
@@ -27,13 +17,14 @@ const History = () => {
     const [index, setIndex] = useState(null)
 	const [modalCancel, setModalCancel] = useState(false)
 	const [modalCancelOrder, setModalCancelOrder] = useState(false)
+	const [picture, setPicture] = useState("")
 
 	const { id } = useSelector((state) => {
-		return {
-			id: state.user.user.id_user,
-		};
+		return {id: state.user.user.id_user}
 	});
 
+	const refreshPage = ()=>{
+		window.location.reload();  }
 
 	React.useEffect(() => {
 		const getHistory = async () => {
@@ -64,6 +55,7 @@ const History = () => {
 					<td style={{ width: 150 }}>
 						<img src={item.image} height="100px" />
 					</td>
+					<td style={{ width: 100 }}>{item.price.toLocaleString()}</td>
 					<td style={{ width: 100 }}>{item.quantity}</td>
 					<td>{item.total.toLocaleString()}</td>
 				</tr>
@@ -80,6 +72,7 @@ const History = () => {
 					<td style={{ width: 150 }}>
 						<img src={item.image} height="100px" />
 					</td>
+					<td style={{ width: 100 }}>{item.price.toLocaleString()}</td>
 					<td style={{ width: 100 }}>{item.quantity}</td>
 					<td>{item.total.toLocaleString()}</td>
 				</tr>
@@ -96,9 +89,11 @@ const History = () => {
     
     const handleOpenModal = (idx) => {
         let idOrder = data[idx].no_order
+		let picture = data[idx].bukti_bayar
         setShow(true)
         setOrderIdHistory(idOrder)
-        setIndex(idx) 
+        setIndex(idx)
+		setPicture(picture)
     }
 	const renderModalCancel = () => {
 		return(
@@ -137,6 +132,7 @@ const History = () => {
 		.then((res)=>{
 			setData(temp)
 			setModalCancel(false)
+			{refreshPage()}
 		})
 		.catch((err)=> console.log(err))
 	}
@@ -148,10 +144,11 @@ const History = () => {
 					<Modal.Title>Upload Buktibayar</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
+					<img src={picture ? URL_IMG + picture : images} alt="No-Image" height="100px"/>
 					<Form.File id="formcheck-api-regular">
-						<Form.File.Label>Upload Bukti Bayar</Form.File.Label>
 						<Form.File.Input onChange={(e) => setImage(e.target.files[0])} />
 					</Form.File>
+						
 				</Modal.Body>
 				<Modal.Footer>
 					<Button variant="secondary" onClick={() => setShow(false)}>
@@ -167,10 +164,6 @@ const History = () => {
 
 	const handleUpload = async () => {
 	   const order = parseInt(orderIdHistory);
-       const idxData = index
-        const temp = [...data]
-        temp.splice(idxData, 1)
-        
 		try {
 			const option = {
 				headers: { "Content-Type": "multipart/form-data" },
@@ -182,11 +175,10 @@ const History = () => {
 				data,
 				option
 			);
-            
-			setData(temp);
+			
 			setShow(false);
 			alert("Upload Success");
-			if(show === false) return <Redirect to="/history"/>
+			{refreshPage()}
 		} catch (error) {
 			// console.log(error.response.data)
             alert(error.response.data)
@@ -230,6 +222,7 @@ const History = () => {
 		.then((res)=>{
 			setData(temp)
 			setModalCancelOrder(false)
+			{refreshPage()}
 		})
 		.catch((err)=> console.log(err))
 	}
@@ -259,7 +252,7 @@ const History = () => {
 						</Nav.Item>
 						<Nav.Item>
 							<Nav.Link onClick={() => setStatus("order confirm")} eventKey="2">
-								Order Paid
+								Order Confirm
 							</Nav.Link>
 						</Nav.Item>
 						<Nav.Item>
@@ -269,173 +262,159 @@ const History = () => {
 						</Nav.Item>
 						<Nav.Item>
 							<Nav.Link eventKey="5">All History</Nav.Link>
+							
 						</Nav.Item>
 					</Nav>
 				</Col>
 				<Col sm={9}>
-					<Tab.Content>
-						<Tab.Pane eventKey="1">
-							{data.length !== 0 ? (
-								data.map((item, index) => {
-									return (
-										<Accordion key={index}>
-											<Card>
-												<Card.Header style={{display: "flex",justifyContent: "space-between",}}>
-													<Accordion.Toggle as={Button} variant="link" onClick={() => setOrderIdHistory(item.no_order)} eventKey={index + 1}>
-														{item.no_order}
-													</Accordion.Toggle>
-													<div>
-													<Button variant="danger" onClick={()=> handleCancel(index)}>Cancel</Button>
-													{renderModalCancel()}
-													<Button variant="primary" onClick={()=>handleOpenModal(index)}>
-														Upload your payment here
-													</Button>
-													{renderModal()}
-													</div>
-												</Card.Header>
-												<Accordion.Collapse eventKey={index + 1}>
-													<Table striped bordered hover>
-														<thead>
-															<tr>
-																<th>#</th>
-																<th>Product</th>
-																<th>Images</th>
-																<th>Quantity</th>
-																<th>Total Price</th>
-															</tr>
-														</thead>
-														<tbody>
-															{tablePayment()}
-															<tr>
-																<td colSpan="4">Grand Total</td>
-																<td>{totalPrice().toLocaleString()}</td>
-															</tr>
-														</tbody>
-													</Table>
-												</Accordion.Collapse>
-											</Card>
-										</Accordion>
-									);
-								})
+				<Tab.Content>
+					<Tab.Pane eventKey="1">
+						{data.length !== 0 ? (
+							data.map((item, index) => {
+								return (
+									<Card key={index}>
+										<Card.Header style={{display: "flex",justifyContent: "space-between",}}>
+											<Accordion.Toggle as={Button} variant="link" onClick={() => setOrderIdHistory(orderIdHistory === item.no_order ? null : item.no_order)}>
+											Invoice : {item.no_order}
+											</Accordion.Toggle>
+											<div>
+											<Button variant="danger" onClick={()=> handleCancel(index)}>Cancel</Button>
+											{renderModalCancel()}
+											<Button variant="primary" onClick={()=>handleOpenModal(index)}>
+												Upload your payment here
+											</Button>
+											{renderModal()}
+											
+											</div>
+										</Card.Header>
+										{orderIdHistory === item.no_order  && (
+											<Table striped hover>
+												<thead>
+													<tr>
+														<th>#</th>
+														<th>Product</th>
+														<th>Images</th>
+														<th>Price</th>
+														<th>Quantity</th>
+														<th>Total Price</th>
+													</tr>
+												</thead>
+												<tbody>
+													{tablePayment()}
+													<tr>
+														<td colSpan="5">Grand Total</td>
+														<td>{totalPrice().toLocaleString()}</td>
+													</tr>
+												</tbody>
+											</Table>
+										)}	
+									</Card>);})
 							) : (<h1>No History</h1>)}
-						</Tab.Pane>
-						<Tab.Pane eventKey="2">
-							{data.length !== 0 ? (
-								data.map((item, index) => {
-									return (
-										<Accordion key={index}>
-											<Card>
-												<Card.Header>
-												<Accordion.Toggle as={Button} variant="link" onClick={() => setOrderIdHistory(item.no_order)} eventKey={index + 1}>
-													{item.no_order}, date : {item.date} 
-												</Accordion.Toggle>
-												<Button onClick={()=> handleOpenModalOrder(index)} variant="danger">Cancel</Button>
-												{renderModalCancelOrder()}
-												</Card.Header>
-													<Accordion.Collapse eventKey={index + 1}>
-														<Table striped bordered hover>
-															<thead>
-																<tr>
-																	<th>#</th>
-																	<th>Product</th>
-																	<th>Images</th>
-																	<th>Quantity</th>
-																	<th>Total Price</th>
-																</tr>
-															</thead>
-															<tbody>
-																{tablePayment()}
-																<tr>
-																	<td colSpan="4">Grand Total</td>
-																	<td>{totalPrice().toLocaleString()}</td>
-																</tr>
-															</tbody>
-														</Table>
-													</Accordion.Collapse>
-												</Card>
-											</Accordion>
-									);
-								})
+					</Tab.Pane>
+					<Tab.Pane eventKey="2">
+						{data.length !== 0 ? (
+							data.map((item, index) => {
+								return (
+									<Card key={index}>
+										<Card.Header style={{display: 'flex', justifyContent: 'space-between'}}>
+										<Accordion.Toggle as={Button} variant="link" onClick={() => setOrderIdHistory(orderIdHistory === item.no_order ? null : item.no_order)}>
+										Invoice : {item.no_order}
+										</Accordion.Toggle>
+										<Button onClick={()=> handleOpenModalOrder(index)} variant="danger">Cancel</Button>
+										{renderModalCancelOrder()}
+										</Card.Header>
+										{orderIdHistory === item.no_order  && (
+											<Table striped hover>
+												<thead>
+													<tr>
+														<th>#</th>
+														<th>Product</th>
+														<th>Images</th>
+														<th>Price</th>
+														<th>Quantity</th>
+														<th>Total Price</th>
+													</tr>
+												</thead>
+												<tbody>
+													{tablePayment()}
+													<tr>
+														<td colSpan="5">Grand Total</td>
+														<td>{totalPrice().toLocaleString()}</td>
+													</tr>
+												</tbody>
+											</Table>)}
+									</Card>)})
 							) : (<h1>No History</h1>)}
-						</Tab.Pane>
-						<Tab.Pane eventKey="3">
-							{data.length !== 0 ? (
-								data.map((item, index) => {
-									return (
-										<Accordion key={index}>
-											<Card>
-												<Card.Header>
-												<Accordion.Toggle as={Button} variant="link" onClick={() => setOrderIdHistory(item.no_order)} eventKey={index + 1}>
-													{item.no_order}, date : {item.date}
-												</Accordion.Toggle>
-													<Button onClick={()=> handleArrived(index)}variant="success">Arrived</Button>
-												</Card.Header>
-													<Accordion.Collapse eventKey={index + 1}>
-														<Table striped bordered hover>
-															<thead>
-																<tr>
-																	<th>#</th>
-																	<th>Product</th>
-																	<th>Images</th>
-																	<th>Quantity</th>
-																	<th>Total Price</th>
-																</tr>
-															</thead>
-															<tbody>
-																{tablePayment()}
-																<tr>
-																	<td colSpan="4">Grand Total</td>
-																	<td>{totalPrice().toLocaleString()}</td>
-																</tr>
-															</tbody>
-														</Table>
-													</Accordion.Collapse>
-											</Card>
-										</Accordion>
-								);
-								    })
+					</Tab.Pane>
+					<Tab.Pane eventKey="3">
+						{data.length !== 0 ? (
+							data.map((item, index) => {
+								return (
+									<Card key={index}>
+										<Card.Header style={{display: 'flex', justifyContent: 'space-between'}}>
+										<Accordion.Toggle as={Button} variant="link" onClick={() => setOrderIdHistory(orderIdHistory === item.no_order ? null : item.no_order)}>
+										Invoice : {item.no_order}
+										</Accordion.Toggle>
+											<Button onClick={()=> handleArrived(index)}variant="success">Arrived</Button>
+										</Card.Header>
+											{orderIdHistory === item.no_order  && (
+												<Table striped hover>
+													<thead>
+														<tr>
+															<th>#</th>
+															<th>Product</th>
+															<th>Images</th>
+															<th>Price</th>
+															<th>Quantity</th>
+															<th>Total Price</th>
+														</tr>
+													</thead>
+													<tbody>
+														{tablePayment()}
+														<tr>
+															<td colSpan="5">Grand Total</td>
+															<td>{totalPrice().toLocaleString()}</td>
+														</tr>
+													</tbody>
+												</Table>)}</Card>)})
 							) : (<h1>No History</h1>)}		
-						</Tab.Pane>
-						<Tab.Pane eventKey="5">
-							{history.length !== 0 ? (
-								history.map((item, index) => {
-									return (
-										<Accordion key={index}>
-											<Card>
-												<Accordion.Toggle as={Card.Header} onClick={() => setOrderIdHistory(item.no_order)} eventKey={index + 1}>	
-													{item.no_order}, date : {item.date}, status : {item.status_name}
-											    </Accordion.Toggle>
-												    <Accordion.Collapse eventKey={index + 1}>
-														<Table striped bordered hover>
-															<thead>
-																<tr>
-																	<th>#</th>
-																	<th>Product</th>
-																	<th>Images</th>
-																	<th>Quantity</th>
-																	<th>Total Price</th>
-																</tr>
-															</thead>
-															<tbody>
-																{tableHistory()}
-																<tr>
-																	<td colSpan="4">Grand Total</td>
-																	<td>{totalPrice().toLocaleString()}</td>
-																</tr>
-															</tbody>
-														</Table>
-													</Accordion.Collapse>
-											</Card>
-										</Accordion>
-									);
-								})
-							) : (<h1>No History</h1>)}
-							</Tab.Pane>
-						</Tab.Content>
-					</Col>
-				</Row>
-			</Tab.Container>
-		</div>
+					</Tab.Pane>
+					<Tab.Pane eventKey="5">
+						{history.length !== 0 ? (
+							history.map((item, index) => {
+								return (
+									<Card key={index}>
+										<Accordion.Toggle as={Card.Header} onClick={() => setOrderIdHistory(orderIdHistory === item.no_order ? null : item.no_order)}>	
+											Invoice : {item.no_order}, date : {item.date}, status : {item.status_name}
+										</Accordion.Toggle>
+											{orderIdHistory === item.no_order  && (
+												<Table striped hover>
+													<thead>
+														<tr>
+															<th>#</th>
+															<th>Product</th>
+															<th>Images</th>
+															<th>Price</th>
+															<th>Quantity</th>
+															<th>Total Price</th>
+														</tr>
+													</thead>
+													<tbody>
+														{tableHistory()}
+														<tr>
+															<td colSpan="5">Grand Total</td>
+															<td>{totalPrice().toLocaleString()}</td>
+														</tr>
+													</tbody>
+												</Table>)}
+									</Card>)})
+						) : (<h1>No History</h1>)}
+					</Tab.Pane>
+				</Tab.Content>
+				</Col>
+			</Row>
+		</Tab.Container>
+	</div>
 	);
 };
 

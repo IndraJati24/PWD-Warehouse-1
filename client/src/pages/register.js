@@ -59,11 +59,12 @@ class Register extends React.Component {
 									ref="username"
 								/>
 							</InputGroup>
+								<small style={{color : "blue", fontSize: 12}}>*note : must have min 5 character</small>
 						</Form.Group>
 
 						<Form.Group className="text-left">
 							<Form.Label>Password</Form.Label>
-							<InputGroup style={{ display: "flex", margin: "10px 0" }}>
+							<InputGroup style={{ display: "flex"}}>
 								<InputGroup.Prepend style={{ width: 50 }}>
 									<InputGroup.Text>
 										<i
@@ -81,11 +82,12 @@ class Register extends React.Component {
 									ref="password"
 								/>
 							</InputGroup>
+							<small style={{color : "blue", fontSize: 12}}>*note : must have min 5 character, include number and symbol (!@#$%^&*)</small>
 						</Form.Group>
 
 						<Form.Group className="text-left">
 							<Form.Label>Email</Form.Label>
-							<InputGroup style={{ display: "flex", margin: "10px 0" }}>
+							<InputGroup style={{ display: "flex" }}>
 								<InputGroup.Prepend style={{ width: 50 }}>
 									<InputGroup.Text>
 										<i className="fas fa-envelope"></i>
@@ -93,7 +95,7 @@ class Register extends React.Component {
 								</InputGroup.Prepend>
 								<Form.Control
 									type="text"
-									placeholder="Enter email..."
+									placeholder="example : xxxx@mail.com..."
 									ref="email"
 								/>
 							</InputGroup>
