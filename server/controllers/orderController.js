@@ -146,7 +146,7 @@ module.exports = {
 		// 						if (cart.quantity > data.stock) {
 		// 							let sisa = cart.quantity - data.stock
 
-		// 							let updateStock = `update warehouse_product set stock=0, stock_masuk=stock_masuk+${db.escape(sisa)}, stock_belum_kirim=stock_belum_kirim +${db.escape(cart.quantity)},stock_operasioal=stock_operasional+${db.escape(sisa)} where id_product=${db.escape(cart.id_product)}
+		// 							let updateStock = `update warehouse_product set stock=0, stock_masuk=stock_masuk+${db.escape(sisa)}, stock_belum_kirim=stock_belum_kirim +${db.escape(cart.quantity)},stock_operasional=stock_operasional+${db.escape(sisa)} where id_product=${db.escape(cart.id_product)}
         //                                           and id_warehouse=${db.escape(cart.warehouse)}`
 		// 							await asyncQuery(updateStock)
 
@@ -156,12 +156,12 @@ module.exports = {
 		// 								if (sisa > dataBaru[0].stock) {
 		// 									sisa -= dataBaru[0].stock
 
-		// 									let updateStock = `update warehouse_product set stock=0, stock_keluar=stock_keluar+${db.escape(dataBaru[0].stock)},stock_operasioal=0 where id_product=${db.escape(dataBaru[0].id_product)}
+		// 									let updateStock = `update warehouse_product set stock=0, stock_keluar=stock_keluar+${db.escape(dataBaru[0].stock)},stock_operasional=0 where id_product=${db.escape(dataBaru[0].id_product)}
         //                                           and id_warehouse=${db.escape(dataBaru[0].id_warehouse)}`
 		// 									let update = await asyncQuery(updateStock)
 		// 								} else {
 
-		// 									let updateStock = `update warehouse_product set stock=${db.escape(dataBaru[0].stock - sisa)}, stock_keluar =stock_keluar + ${db.escape(sisa)},stock_operasioal=stock_operasional-${db.escape(sisa)} where id_product=${db.escape(dataBaru[0].id_product)}
+		// 									let updateStock = `update warehouse_product set stock=${db.escape(dataBaru[0].stock - sisa)}, stock_keluar =stock_keluar + ${db.escape(sisa)},stock_operasional=stock_operasional-${db.escape(sisa)} where id_product=${db.escape(dataBaru[0].id_product)}
         //                                           and id_warehouse=${db.escape(dataBaru[0].id_warehouse)}`
 		// 									let update = await asyncQuery(updateStock)
 		// 									break
