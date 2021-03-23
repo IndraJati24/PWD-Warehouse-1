@@ -231,7 +231,8 @@ class CartPage extends Component {
             alamat,
             total_harga:this.totalPrice().toLocaleString(),
             email:this.props.email,
-			tgl_transaksi:this.state.data[0].date
+			tgl_transaksi:this.state.data[0].date,
+			cart:data
         }
 
 		Axios.post(`http://localhost:1000/order/wareLoc`, gudang)

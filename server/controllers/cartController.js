@@ -97,20 +97,66 @@ module.exports = {
         }
     },
     invoice: async (req, res) => {
-        const { no_order, email,tgl_transaksi,alamat,total_harga } = req.body
+        const { no_order, email, tgl_transaksi, alamat, total_harga, cart } = req.body
         try {
+            let tr = ""
+             for (let i = 0; i < cart.length; i++) {
+
+                tr += `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${cart[i].name}</td>
+                    <td>${cart[i].quantity}</td>
+                    <td>${cart[i].price}</td>
+                </tr>
+            `
+            }
             const option = {
                 from: `Admin <${test_email}>`,
                 to: email,
                 subject: "Invoice",
+                html: `
+                <div colspan="2" style="border: solid 1px #ddd; padding:10px 20px;">
+                <p style="font-size:14px;margin:0 0 6px 0;"><span
+                        style="font-weight:bold;display:inline-block;min-width:150px">Order status</span><b
+                        style="color:green;font-weight:normal;margin:0">Success</b></p>
+                <p style="font-size:14px;margin:0 0 6px 0;"><span
+                        style="font-weight:bold;display:inline-block;min-width:146px">Transaction ID</span>
+                    ${no_order}</p>
+                <p style="font-size:14px;margin:0 0 6px 0;"><span
+                        style="font-weight:bold;display:inline-block;min-width:146px">Transaction Date</span>
+                    ${tgl_transaksi}</p>
+                <p style="font-size:14px;margin:0 0 6px 0;"><span
+                        style="font-weight:bold;display:inline-block;min-width:146px">Address</span>
+                    ${alamat}</p>
+                <p style="font-size:14px;margin:0 0 0 0;"><span
+                        style="font-weight:bold;display:inline-block;min-width:146px">Order amount</span> IDR.
+                    ${total_harga}</p>
+            </div>
+            <br/>
+                <h3>Items</h3>
+                <table id="daftar-produk">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Produk</th>
+                        <th>Quantity</th>
+                        <th>Harga</th>
+
+                    </tr>
+                </thead>
+                <tbody id="tbody-produk">
+                ${tr}
+                </tbody>
+            </table>`
             };
 
-            const verifyFile = fs
-                .readFileSync("./email/invoice.html")
-                .toString();
-            const template = handleBars.compile(verifyFile);
+            // const verifyFile = fs
+            //     .readFileSync("./email/invoice.html")
+            //     .toString();
+            // const template = handleBars.compile(verifyFile);
 
-            option.html = template({ no_order, tgl_transaksi,alamat,total_harga });
+            // option.html = template({ no_order, tgl_transaksi, alamat, total_harga, cart });
 
             const sendEmail = await transporter.sendMail(option);
             res.status(200).send(sendEmail.response);
