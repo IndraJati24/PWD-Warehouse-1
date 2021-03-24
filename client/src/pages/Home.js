@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import axios from "axios";
-import { Card, Button, Pagination, DropdownButton,Dropdown } from "react-bootstrap";
+import { Card, Button, Pagination, DropdownButton, Dropdown, Carousel } from "react-bootstrap";
 import { Link } from 'react-router-dom'
 
 
 export default function Home() {
     const [data, setData] = useState([])
     const [kategori, setKategori] = useState([])
+    const [carousel, setCarousel] = useState([])
     const [currentKategori, setcurrentKategori] = useState(null)
 
     //pagination
     const [currentPage, setcurrentPage] = useState(1)
-    const [itemsPerPage, setitemsPerPage] = useState(10)
-    const [pageNumberLimit, setpageNumberLimit] = useState(10);
-    const [maxPageNumberLimit, setmaxPageNumberLimit] = useState(10);
+    const [itemsPerPage, setitemsPerPage] = useState(5)
+    const [pageNumberLimit, setpageNumberLimit] = useState(3);
+    const [maxPageNumberLimit, setmaxPageNumberLimit] = useState(3);
     const [minPageNumberLimit, setminPageNumberLimit] = useState(0);
 
     useEffect(() => {
@@ -21,27 +22,27 @@ export default function Home() {
 
             let res = await axios.get('http://localhost:1000/product/getAll')
             let res2 = await axios.get('http://localhost:1000/product//getCategory')
+            let res3 = await axios.get('http://localhost:1000/product//getCarousel')
             res = res.data.filter(item => item.total_stock > 0)
 
             setData(res);
             setKategori(res2.data)
-
+            setCarousel(res3.data)
         }
         getData()
     }, [])
-    
+
     // UPDATECATEGORY
     useEffect(() => {
         const getData = async () => {
             let res = await axios.get('http://localhost:1000/product/getAll')
-            if(currentKategori){
-                res = res.data.filter(item => item.nama_kategori===currentKategori && item.total_stock > 0)
+            if (currentKategori) {
+                res = res.data.filter(item => item.nama_kategori === currentKategori && item.total_stock > 0)
                 setData(res);
-            }else{
+            } else {
                 res = res.data.filter(item => item.stock > 0)
                 setData(res);
             }
-            
         }
         getData()
     }, [currentKategori])
@@ -151,17 +152,16 @@ export default function Home() {
         return (
             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {data.slice(indexOfFirstItem, indexOfLastItem).map((item, index) => {
-             
+
                     return (
-                        <Card style={{ width: '12.5rem',margin:"1rem 1rem"}} key={index}>
-                            <Card.Img variant="top" src={item.image} style={{height:"13rem"}}  />
+                        <Card style={{ width: '12.5rem', margin: "1rem 1rem" }} key={index}>
+                            <Card.Img variant="top" src={item.image} style={{ height: "13rem" }} />
                             <Card.Body >
-                                <div style={{display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
+                                <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                                     <Card.Title>{item.name}</Card.Title>
                                     <Card.Text>IDR {item.price.toLocaleString()}</Card.Text>
                                     <div >
-                                    <Button  style={{width:"6.5rem",marginRight:"8px"}} variant="success" as={Link} to={`/detail/${item.id_product}`} >Buy</Button>
-                                    <Button variant="warning" ><i class="fas fa-shopping-cart"></i></Button>
+                                        <Button style={{ width: "100%" }} variant="success" as={Link} to={`/detail/${item.id_product}`} >Buy</Button>
                                     </div>
                                 </div>
                             </Card.Body>
@@ -171,7 +171,7 @@ export default function Home() {
             </div>
         )
     }
-    const handleCategory=(nama_kategori)=>{
+    const handleCategory = (nama_kategori) => {
         setcurrentPage(1)
         setcurrentKategori(nama_kategori)
     }
@@ -179,27 +179,46 @@ export default function Home() {
 
     const renderCategory = () => {
         return (
-            <DropdownButton variant="outline-info" title={currentKategori?currentKategori:"Category"}>
-                <Dropdown.Item onClick={()=>setcurrentKategori(null)} >All Product</Dropdown.Item>
-                {kategori.map((item,index)=>{
-                    return(
-                        <Dropdown.Item onClick={()=>handleCategory(item.nama_kategori)} >{item.nama_kategori}</Dropdown.Item>
+            <DropdownButton variant="outline-info" title={currentKategori ? currentKategori : "Category"}>
+                <Dropdown.Item onClick={() => setcurrentKategori(null)} >All Product</Dropdown.Item>
+                {kategori.map((item, index) => {
+                    return (
+                        <Dropdown.Item onClick={() => handleCategory(item.nama_kategori)} >{item.nama_kategori}</Dropdown.Item>
                     )
                 })}
-                
+
             </DropdownButton>
         )
     }
 
     return (
-        <div style={{margin:"2rem 10rem"}}>
-            <div style={{display:"flex",flexDirection:"row"}}>
-                <Button variant="outline-info" onClick={hargaTerkecil} style={{marginLeft:"1rem"}}>Harga Terkecil</Button>
-                <Button variant="outline-info" onClick={hargaTerbesar} style={{marginLeft:"2rem"}}>Harga Terbesar</Button>
-                <Button variant="outline-info" onClick={urutAbjadAz} style={{marginLeft:"2rem"}}>Nama A - Z</Button>
-                <Button variant="outline-info" onClick={urutAbjadZa} style={{marginLeft:"2rem"}}>Nama Z - A</Button>
-                <div style={{marginLeft:"2rem"}}>
-                {renderCategory()}
+        <div style={{ margin: "2rem 10rem" }}>
+            <div style={{marginBottom:"1rem"}}>
+                <Carousel>
+                    {carousel.map((item, index) => {
+                        return (
+                            <Carousel.Item>
+                                <img
+                                    src={item.images}
+                                    alt="First slide"
+                                    style={{width:"100%",height:"500px"}}
+                                />
+                                <Carousel.Caption>
+                                    <h3>First slide label</h3>
+                                    <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+                                </Carousel.Caption>
+                            </Carousel.Item>
+                        )
+                    })}
+                </Carousel>
+            </div>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+                <Button variant="outline-info" onClick={hargaTerkecil} style={{ marginLeft: "1rem" }}>Harga Terkecil</Button>
+                <Button variant="outline-info" onClick={hargaTerbesar} style={{ marginLeft: "2rem" }}>Harga Terbesar</Button>
+                <Button variant="outline-info" onClick={urutAbjadAz} style={{ marginLeft: "2rem" }}>Nama A - Z</Button>
+                <Button variant="outline-info" onClick={urutAbjadZa} style={{ marginLeft: "2rem" }}>Nama Z - A</Button>
+                <div style={{ marginLeft: "2rem" }}>
+                    {renderCategory()}
                 </div>
             </div>
             <Product />

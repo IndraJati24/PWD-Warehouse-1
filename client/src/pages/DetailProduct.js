@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Image, Button, Modal, Form, Toast } from "react-bootstrap";
+import { Image, Button, Modal, Form, Toast,Card } from "react-bootstrap";
 import Axios from "axios";
 import { connect } from 'react-redux'
-
+import { Link } from 'react-router-dom'
 class DetailProduct extends Component {
     constructor(props) {
         super(props);
@@ -11,22 +11,40 @@ class DetailProduct extends Component {
             modal: false,
             qty: 1,
             toast: false,
-            cart: []
+            cart: [],
+            kategoriSama: [],
+            allProduct:[]
         };
     }
     componentDidMount() {
         Axios.get(
-            `http://localhost:1000/product/getDetailPage/${this.props.match.params.id}`
+            'http://localhost:1000/product/getAll'
         )
             .then((res) => {
                 Axios.get(`http://localhost:1000/cart/getCart/${this.props.id}`)
                     .then((res2) => {
-                        this.setState({ cart: res2.data, product: res.data });
+                        let detailPage = res.data.filter(item => item.id_product === parseInt(this.props.match.params.id))[0]
+                        let kategoriSerupa = res.data.filter(item => item.id_kategori === parseInt(detailPage.id_kategori) && item.total_stock>0 &&item.id_product!=detailPage.id_product)
+                        this.setState({ cart: res2.data, product: detailPage, kategoriSama: kategoriSerupa,allProduct:res.data });
                     })
                     .catch((err) => console.log(err));
             })
             .catch((err) => console.log(err));
     }
+
+    // componentDidUpdate = async () => {
+
+	// 		Axios.get('http://localhost:1000/product/getAll')
+	// 			.then((res) => {
+    //                 let detailPage = res.data.filter(item => item.id_product === parseInt(this.props.match.params.id))[0]
+    //                 let kategoriSerupa = res.data.filter(item => item.id_kategori === parseInt(detailPage.id_kategori) && item.total_stock>0 &&item.id_product!=detailPage.id_product)
+
+    //                 this.setState({ product: detailPage,kategoriSama: kategoriSerupa });
+	// 				// console.log(res.data);
+	// 			})
+	// 			.catch((err) => console.log(err));
+		
+	// };
 
     handleMinus = () => {
         if (this.state.qty <= 1) return;
@@ -41,62 +59,62 @@ class DetailProduct extends Component {
     };
 
     handleAddToCart = () => {
-        const { qty, product,cart } = this.state;
+        const { qty, product, cart } = this.state;
         // console.log("sebelum",cart);
-        let cartFilter=[]
-        let idx=null
-        cart.forEach((item,index)=>{
-            if(item.id_product===product.id_product){
+        let cartFilter = []
+        let idx = null
+        cart.forEach((item, index) => {
+            if (item.id_product === product.id_product) {
                 cartFilter.push(item)
-                idx=index
+                idx = index
             }
         })
         const date = new Date()
-        if(cartFilter.length!==0){
-            if (parseInt(qty)+cartFilter[0].quantity > parseInt(product.total_stock))
+        if (cartFilter.length !== 0) {
+            if (parseInt(qty) + cartFilter[0].quantity > parseInt(product.total_stock))
                 return alert(
                     `The amount exceeds from stock, current stock is ${product.total_stock} `
                 );
-                cartFilter[0].quantity+=qty
-                cart.splice(idx, 1, cartFilter[0])    
+            cartFilter[0].quantity += qty
+            cart.splice(idx, 1, cartFilter[0])
             let cartData = {
                 no_order: Date.now(),
-                date:`${date.getFullYear()}-${date.getMonth() +1}-${date.getDate()}`,
+                date: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`,
                 id_user: (this.props.id ? this.props.id : 2),
                 id_product: product.id_product,
                 quantity: qty,
                 total: qty * product.price
             }
-    
+
             Axios.post(`http://localhost:1000/cart/addCart`, cartData)
                 .then((res) => {
                     this.setState({ modal: false, toast: true });
                 })
                 .catch((err) => console.log(err));
-        }else{
+        } else {
             if (parseInt(qty) > parseInt(product.total_stock))
                 return alert(
                     `The amount exceeds from stock, current stock is ${product.total_stock} `
                 );
-                
+
             let cartData = {
                 no_order: Date.now(),
-                date:`${date.getFullYear()}-${date.getMonth() +1}-${date.getDate()}`,
+                date: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`,
                 id_user: (this.props.id ? this.props.id : 2),
                 id_product: product.id_product,
                 quantity: qty,
                 total: qty * product.price
             }
-    
+
             Axios.post(`http://localhost:1000/cart/addCart`, cartData)
                 .then((res) => {
                     Axios.get(`http://localhost:1000/cart/getCart/${this.props.id}`)
-                    .then((res2) => {
-                        this.setState({ cart: res2.data });
-                        
-                        this.setState({ modal: false, toast: true });
-                    })
-                    .catch((err) => console.log(err));
+                        .then((res2) => {
+                            this.setState({ cart: res2.data });
+
+                            this.setState({ modal: false, toast: true });
+                        })
+                        .catch((err) => console.log(err));
                     // window.location.reload(false); 
                 })
                 .catch((err) => console.log(err));
@@ -106,9 +124,15 @@ class DetailProduct extends Component {
 
     };
 
+    handleBuyCat=(idx)=>{
+        let detailPage = this.state.allProduct.filter(item => item.id_product === parseInt(idx))[0]
+        let kategoriSerupa = this.state.allProduct.filter(item => item.id_kategori === parseInt(detailPage.id_kategori) && item.total_stock>0 &&item.id_product!=detailPage.id_product)
+        this.setState({ product: detailPage, kategoriSama: kategoriSerupa,qty:1 });
+    }
+
     render() {
-        const { product, modal, qty } = this.state;
-        console.log(this.state.cart);
+        const { product, modal, qty, kategoriSama } = this.state;
+        console.log(this.state.kategoriSama);
         return (
             <div style={{ margin: "3rem 5rem" }}>
                 <h1>Product Detail</h1>
@@ -158,6 +182,25 @@ class DetailProduct extends Component {
                             </div>
                         </div>
                     </div>
+                </div>
+                <h2>Kategori Serupa</h2>
+                <div style={{display:"flex",flexDirection:"row"}}>
+                    {kategoriSama.length === 0 ? null : kategoriSama.slice(0, 5).map((item,index) => {
+                        return (
+                            <Card style={{ width: '12.5rem', margin: "1rem 1rem" }} key={index}>
+                                <Card.Img variant="top" src={item.image} style={{ height: "13rem" }} />
+                                <Card.Body >
+                                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                                        <Card.Title>{item.name}</Card.Title>
+                                        <Card.Text>IDR {item.price.toLocaleString()}</Card.Text>
+                                        <div >
+                                            <Button style={{ width: "100%", marginRight: "8px" }} variant="success" onClick={()=>this.handleBuyCat(item.id_product)} >Buy</Button>
+                                        </div>
+                                    </div>
+                                </Card.Body>
+                            </Card>
+                        )
+                    })}
                 </div>
                 <Modal
                     show={modal}

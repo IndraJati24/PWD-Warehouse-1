@@ -180,8 +180,7 @@ const History = () => {
 			alert("Upload Success");
 			{refreshPage()}
 		} catch (error) {
-			// console.log(error.response.data)
-            alert(error.response.data)
+            alert("Tolong Masukkan Bukti Bayar dan Hanya Boleh Gambar")
 		}
 	};
 
