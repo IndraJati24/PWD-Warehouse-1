@@ -30,7 +30,7 @@ function login(req, res) {
     if (!result[0].verify) return res.status(400).send('Account is not verified!')
 
     let token = createToken({
-      id: result[0].id_users,
+      id: result[0].id_user,
       username: result[0].username,
     });
 

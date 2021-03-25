@@ -1,5 +1,7 @@
 const { asyncQuery, generateQuery } = require("../helpers/queryHelp");
 const db = require("../database");
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = process.env.CRYPTO_KEY;
 
 module.exports = {
 	getWarehouseLoc: async (req, res) => {
@@ -189,8 +191,9 @@ module.exports = {
 			res.status(400).send(error);
 		}
 	},
-	getOrder: async (req, res) => {
-		const id = parseInt(req.params.id)
+	getOrderDetail: async (req, res) => {
+		const verify = jwt.verify(req.headers.token, SECRET_KEY)
+		const id = parseInt(verify.id)
 		try {
 			const getOrder = `select * from orders o
 			join order_details od using(no_order)
@@ -208,7 +211,8 @@ module.exports = {
 		}
 	},
 	getAllOrder: async (req, res) => {
-		const id = parseInt(req.params.id)
+		const verify = jwt.verify(req.headers.token, SECRET_KEY)
+		const id = parseInt(verify.id)
 		try {
 			const getOrder = `select * from orders o
 			join order_status os on o.status = os.id_order_status 
@@ -252,7 +256,8 @@ module.exports = {
 			result.forEach(async (cart) => {
 				result2.forEach(async (gudang) => {
 					if (cart.id_product === gudang.id_product && cart.warehouse === gudang.id_warehouse) {
-						const updateStock = `update warehouse_product set stock=${gudang.stock + cart.quantity}, stock_belum_kirim=${gudang.stock_belum_kirim - cart.quantity}`
+						const updateStock = `update warehouse_product set stock=${gudang.stock + cart.quantity}, stock_belum_kirim=${gudang.stock_belum_kirim - cart.quantity}
+											where id_product = ${db.escape(cart.id_product)} and id_warehouse = ${db.escape(cart.warehouse)}`
 						await asyncQuery(updateStock)
 					}
 				})
