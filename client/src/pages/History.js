@@ -26,20 +26,28 @@ const History = () => {
 	const refreshPage = ()=>{
 		window.location.reload();  }
 
-	React.useEffect(() => {
-		const getHistory = async () => {
-			let res = await axios.get(`http://localhost:1000/order/getOrder/${id}`);
-			let res2 = await axios.get(`http://localhost:1000/order/getAllOrder/${id}`);
-			setDetail(res.data);
-			setHistory(res2.data);
-		};
-		getHistory();
-	}, [status, id]);
-
-	React.useEffect(() => {
-		let result = history.filter((item) => item.status_name === status);
-		setData(result);
-	}, [status]);
+		React.useEffect(() => {
+			const getHistory = async () => {
+				const option = {
+					headers: { token: localStorage.getItem("token") },
+				};
+				let res = await axios.get(`http://localhost:1000/order/getOrderDetail`, option);
+				let res2 = await axios.get(`http://localhost:1000/order/getAllOrder`, option);
+				setDetail(res.data);
+				setHistory(res2.data);
+			};
+			getHistory();
+		}, []);
+	
+		React.useEffect(() => {
+			let result = []
+			history.forEach((item) => {
+				if(item.status_name === status){
+					result.push(item)
+				}
+			});
+			setData(result);
+		}, [status]);
 
 	React.useEffect(() => {
 		let result = detail.filter((item) => item.no_order === orderIdHistory);
@@ -245,6 +253,9 @@ const History = () => {
 				<Col sm={3}>
 					<Nav variant="pills" className="flex-column">
 						<Nav.Item>
+							<Nav.Link eventKey="5">All History</Nav.Link>
+						</Nav.Item>
+						<Nav.Item>
 							<Nav.Link onClick={() => setStatus("payment pending")} eventKey="1">
 								Payment Pending
 							</Nav.Link>
@@ -258,10 +269,6 @@ const History = () => {
 							<Nav.Link onClick={() => setStatus("delivered")} eventKey="3">
 								Delivered
 							</Nav.Link>
-						</Nav.Item>
-						<Nav.Item>
-							<Nav.Link eventKey="5">All History</Nav.Link>
-							
 						</Nav.Item>
 					</Nav>
 				</Col>

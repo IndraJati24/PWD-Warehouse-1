@@ -258,14 +258,27 @@ class CartPage extends Component {
 			.catch((err) => console.log(err));
 	};
 
+	handleDeleteCart = () => {
+		Axios.delete(`http://localhost:1000/cart/delAllCart/${this.props.id}`)
+		.then((res)=>{
+			this.setState({data : []})
+		})
+		.catch((err)=>console.log(err))
+	}
+
 	render() {
-		console.log(this.state.city);
 		let apiKey = "37603d38a85f4f36bda754c5aabfac4a";
         if(this.state.history) return <Redirect to="/"/>
 		return (
 			<div style={{ padding: "10px 30px" }}>
+				{this.state.data.length !== 0 ? (
+				<>
 				<div style={{ display: "flex", justifyContent: "space-between" }}>
 					<h2>Hello {this.props.username} this is your cart</h2>
+					<div>
+					<Button variant="danger" onClick={this.handleDeleteCart}>
+						Delete All
+					</Button>
 					<Button
 						variant="success"
 						onClick={() => this.setState({ modalCheckOut: true })}
@@ -273,6 +286,7 @@ class CartPage extends Component {
 					>
 						Checkout
 					</Button>
+					</div>
 				</div>
 				<div style={{ marginTop: 20 }}>
 					<Table striped bordered hover>
@@ -300,6 +314,8 @@ class CartPage extends Component {
 						</tbody>
 					</Table>
 				</div>
+				</>
+				) : (<h1>Cart is Empty</h1>)}
 				<Modal
 					show={this.state.modal}
 					onHide={() => this.setState({ modal: false, total_stock: 0 })}

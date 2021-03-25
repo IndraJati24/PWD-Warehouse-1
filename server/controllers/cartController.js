@@ -96,6 +96,24 @@ module.exports = {
             res.status(400).send(err)
         }
     },
+    deleteAllCart: async (req, res) => {
+        const id = (req.params.id)
+        try {
+            const getCart = `select * from orders where id_user = ${db.escape(id)} and status = 1`
+            const result = await asyncQuery(getCart)
+
+            let no_order = result[0].no_order
+            console.log(no_order)
+
+            const delOrder = `delete from orders where no_order = ${db.escape(no_order)}`
+            await asyncQuery(delOrder)
+
+            res.status(200).send("update")
+        } catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
     invoice: async (req, res) => {
         const { no_order, email, tgl_transaksi, alamat, total_harga, cart } = req.body
         try {
