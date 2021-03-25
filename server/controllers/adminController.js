@@ -73,6 +73,7 @@ async function getCategories(req, res) {
 }
 
 async function addCategory(req, res) {
+    console.log(req.body)
     const { nama_kategori } = req.body // kategori msh fixed
     try {
         const queryProduct = `INSERT INTO kategori (nama_kategori)
@@ -118,12 +119,12 @@ async function deleteCategory(req, res) {
 }
 
 //Stock operasional per gudang
-async function stockOperasional(req,res){
+async function stockOperasional(req, res) {
     try {
-        const queryStockOperasional=`select wp.*,p.name nama_product,p.image,w.name from warehouse_product wp
+        const queryStockOperasional = `select wp.*,p.name nama_product,p.image,w.name from warehouse_product wp
         join product p on wp.id_product=p.id_product
         join warehouse w on wp.id_warehouse=w.id_warehouse;`
-        const result= await asyncQuery(queryStockOperasional)
+        const result = await asyncQuery(queryStockOperasional)
 
         res.status(200).send(result)
     } catch (error) {
@@ -132,12 +133,12 @@ async function stockOperasional(req,res){
 }
 
 //Stock operasional seluruh gudang
-async function stockOperasionalAll(req,res){
+async function stockOperasionalAll(req, res) {
     try {
-        const queryStockOperasional=`select wp.*,p.name nama_product,p.image,w.name,sum(wp.stock_operasional) total from warehouse_product wp
+        const queryStockOperasional = `select wp.*,p.name nama_product,p.image,w.name,sum(wp.stock_operasional) total from warehouse_product wp
         join product p on wp.id_product=p.id_product
         join warehouse w on wp.id_warehouse=w.id_warehouse group by wp.id_product;`
-        const result= await asyncQuery(queryStockOperasional)
+        const result = await asyncQuery(queryStockOperasional)
 
         res.status(200).send(result)
     } catch (error) {
@@ -145,4 +146,4 @@ async function stockOperasionalAll(req,res){
     }
 }
 
-module.exports = { getProducts, addProduct, editProduct, deleteProduct, getCategories, addCategory, editCategory, deleteCategory,stockOperasional,stockOperasionalAll }
+module.exports = { getProducts, addProduct, editProduct, deleteProduct, getCategories, addCategory, editCategory, deleteCategory, stockOperasional, stockOperasionalAll }

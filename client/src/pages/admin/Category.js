@@ -5,17 +5,11 @@ import BootstrapTable from 'react-bootstrap-table-next'
 import paginationFactory from 'react-bootstrap-table2-paginator'
 
 const ModalAdd = ({ showAdd, addProduct, handleCloseAdd }) => {
-    const defaultData = {
-        name: '',
-        price: 0,
-        description: '',
-        image: '',
-
-    }
+    const defaultData = { nama_kategori: '' }
     const [data, setData] = useState(defaultData)
 
     const onClickAdd = () => {
-        // console.log(data)
+        console.log(data)
         addProduct(data);
         setData(defaultData);
     }
@@ -23,8 +17,6 @@ const ModalAdd = ({ showAdd, addProduct, handleCloseAdd }) => {
     const onChangeData = (e) => {
         const key = e.target.attributes.name.value;
         let value = e.target.value;
-
-        if (parseInt(value)) value = parseInt(value)
 
         setData(prevData => ({ ...prevData, [key]: value }))
     }
@@ -38,23 +30,7 @@ const ModalAdd = ({ showAdd, addProduct, handleCloseAdd }) => {
                 <Form>
                     <Form.Group>
                         <Form.Label>Name</Form.Label>
-                        <Form.Control name="name" type="text" defaultValue={data.name} name="name" onChange={onChangeData} />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>Price</Form.Label>
-                        <Form.Control name="price" type="number" defaultValue={data.price} name="price" onChange={onChangeData} />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>Description</Form.Label>
-                        <Form.Control name="description" type="text" as="textarea" defaultValue={data.description} rows={3} name="description" onChange={onChangeData} />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>Category</Form.Label>
-                        <Form.Control as="select">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                        </Form.Control>
+                        <Form.Control name="nama_kategori" type="text" defaultValue={data.nama_kategori} onChange={onChangeData} />
                     </Form.Group>
                 </Form>
             </Modal.Body>
@@ -104,8 +80,6 @@ const ModalEdit = ({ showEdit, handleCloseEdit, product, editProduct, setProduct
         const key = e.target.attributes.name.value;
         let value = e.target.value;
 
-        if (!!parseInt(value)) value = parseInt(value)
-
         setProduct(prevData => ({ ...prevData, [key]: value }))
     }
 
@@ -118,23 +92,7 @@ const ModalEdit = ({ showEdit, handleCloseEdit, product, editProduct, setProduct
                 <Form>
                     <Form.Group>
                         <Form.Label>Name</Form.Label>
-                        <Form.Control type="text" defaultValue={product?.name} name="name" onChange={onChangeData} />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>Price</Form.Label>
-                        <Form.Control type="number" defaultValue={product?.price} name="price" onChange={onChangeData} />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>Description</Form.Label>
-                        <Form.Control type="text" as="textarea" defaultValue={product?.description} rows={3} name="description" onChange={onChangeData} />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>Category</Form.Label>
-                        <Form.Control as="select">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                        </Form.Control>
+                        <Form.Control name="nama_kategori" type="text" defaultValue={product.nama_kategori} onChange={onChangeData} />
                     </Form.Group>
                 </Form>
             </Modal.Body>
@@ -152,6 +110,10 @@ const ModalEdit = ({ showEdit, handleCloseEdit, product, editProduct, setProduct
 
 function Category() {
     const [categories, setCategories] = useState([])
+    const [category, setCategory] = useState({});
+    const [showDelete, setShowDelete] = useState(0); //show delete modal
+    const [showEdit, setShowEdit] = useState(0);
+    const [showAdd, setShowAdd] = useState(false)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -166,13 +128,69 @@ function Category() {
 
         fetchData()
     }, [])
+
+    const handleCloseDelete = () => setShowDelete(0);
+    const handleShowDelete = (category) => {
+        console.log(category)
+        setShowDelete(category.id_kategori)
+        setCategory(category)
+    };
+
+    const handleCloseEdit = () => setShowEdit(0);
+    const handleShowEdit = (category) => {
+        console.log(category, 'set product')
+        setShowEdit(category.id_kategori)
+        setCategory(category)
+    }
+
+    const handleCloseAdd = () => setShowAdd(false);
+    const handleShowAdd = () => setShowAdd(true);
+
+    const deleteCategory = async (id) => {
+        const filter = (prevData) => prevData.filter(productPrev => productPrev.id_kategori !== id)
+        setCategories(filter);
+        setShowDelete(0)
+        // axios
+        try {
+            await axios.delete('http://localhost:1000/admin/categories/' + id);
+        } catch (err) {
+            console.log(err.response)
+        }
+    }
+
+    const editCategory = async () => {
+        setShowEdit(0)
+        const result = categories.map(oldProduct => oldProduct.id_kategori === category.id_kategori ? category : oldProduct);
+        setCategories(result)
+        //axios
+        try {
+            const res = await axios.put(`http://localhost:1000/admin/categories/${category.id_kategori}`, category);
+
+            console.log(res, 'success')
+        } catch (err) {
+            console.log(err.response)
+        }
+    }
+
+    const addCategory = async (newData) => {
+        setCategories((prevData) => ([...prevData, newData]))
+        setShowAdd(false)
+        try {
+            const result = await axios.post('http://localhost:1000/admin/categories', newData);
+
+            console.log(result, 'success');
+        } catch (err) {
+            console.log(err.response)
+        }
+    }
+
     return (
         <Jumbotron fluid className="m-3">
             <Container>
 
                 <h2 className="text-center mb-2">Category</h2>
 
-                <Button className="mb-2">Add Category</Button>
+                <Button onClick={handleShowAdd} className="mb-2">Add Category</Button>
 
                 <BootstrapTable
                     keyField="id_kategori"
@@ -192,10 +210,10 @@ function Category() {
                         formatter: (cell, row, rowIndex, extraData) => (
                             <>
                                 <Button variant="outline-danger"
-                                // onClick={() => handleShow(row)}
+                                    onClick={() => handleShowDelete(row)}
                                 >Delete</Button>
                                 <Button variant="outline-info"
-                                // onClick={() => handleShowEdit(row)}
+                                    onClick={() => handleShowEdit(row)}
                                 >Edit</Button>
                             </>
                         ),
@@ -203,22 +221,22 @@ function Category() {
                     pagination={paginationFactory()}
                 />
                 <ModalAdd
-                // showAdd={showAdd} 
-                // handleCloseAdd={handleCloseAdd} 
-                // addProduct={addProduct} 
+                    showAdd={showAdd}
+                    handleCloseAdd={handleCloseAdd}
+                    addProduct={addCategory}
                 />
                 <ModalDelete
-                // show={show === product.id_product ? true : false}
-                // handleClose={handleClose}
-                // id_product={product.id_product}
-                // deleteProduct={deleteProduct}
+                    show={showDelete === category.id_kategori ? true : false}
+                    handleClose={handleCloseDelete}
+                    id_product={category.id_kategori}
+                    deleteProduct={deleteCategory}
                 />
                 <ModalEdit
-                // showEdit={showEdit === product.id_product ? true : false}
-                // handleCloseEdit={handleCloseEdit}
-                // product={product}
-                // setProduct={setProduct}
-                // editProduct={editProduct}
+                    showEdit={showEdit === category.id_kategori ? true : false}
+                    handleCloseEdit={handleCloseEdit}
+                    product={category}
+                    setProduct={setCategory}
+                    editProduct={editCategory}
                 />
             </Container>
 
