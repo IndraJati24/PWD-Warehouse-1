@@ -146,4 +146,34 @@ async function stockOperasionalAll(req, res) {
     }
 }
 
-module.exports = { getProducts, addProduct, editProduct, deleteProduct, getCategories, addCategory, editCategory, deleteCategory, stockOperasional, stockOperasionalAll }
+async function getOrders(req, res) {
+    try {
+        const queryOrder = `SELECT o.*, a.username, a.city, os.status_name FROM orders o
+                        join account a on a.id_user = o.id_user
+                        join order_status os on os.id_order_status = o.status
+        `;
+
+        const result = await asyncQuery(queryOrder);
+
+        res.status(200).send(result);
+    } catch (err) {
+        res.status(400).send(err)
+    }
+}
+
+async function confirmationOrder(req, res) {
+    const { no_order } = req.body
+    try {
+        const queryOrder = `UPDATE orders
+            SET status = 3
+            WHERE no_order = '${no_order}'
+        `
+        await asyncQuery(queryOrder)
+
+        res.status(200).send('confirmed')
+    } catch (err) {
+
+    }
+}
+
+module.exports = { getProducts, addProduct, editProduct, deleteProduct, getCategories, addCategory, editCategory, deleteCategory, stockOperasional, stockOperasionalAll, getOrders }
