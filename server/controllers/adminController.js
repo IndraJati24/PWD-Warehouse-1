@@ -121,7 +121,7 @@ async function deleteCategory(req, res) {
 //Stock operasional per gudang
 async function stockOperasional(req, res) {
     try {
-        const queryStockOperasional = `select wp.*,p.name nama_product,p.image,w.name from warehouse_product wp
+        const queryStockOperasional = `select wp.*,p.name nama_product,p.image,p.price,w.name,(p.price*wp.stock_sudah_kirim) total from warehouse_product wp
         join product p on wp.id_product=p.id_product
         join warehouse w on wp.id_warehouse=w.id_warehouse;`
         const result = await asyncQuery(queryStockOperasional)

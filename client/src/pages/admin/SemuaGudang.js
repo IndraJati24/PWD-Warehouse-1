@@ -24,7 +24,7 @@ export default function GudnagC({data}) {
     }]
     return (
         <div>
-            <h3 style={{ margin: "1rem 1rem" }}>Gudang C</h3>
+            <h3 style={{ margin: "1rem 1rem" }}>Stock Operasional Semua Gudang</h3>
             <BootstrapTable keyField="id_product" data={data ? data : []} columns={columnsOption} pagination={paginationFactory()} />
 
         </div>
