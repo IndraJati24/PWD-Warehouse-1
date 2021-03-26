@@ -162,18 +162,29 @@ async function getOrders(req, res) {
 }
 
 async function confirmationOrder(req, res) {
-    const { no_order } = req.body
+    const { no_order } = req.params
+    const { isConfirm } = req.body
     try {
-        const queryOrder = `UPDATE orders
-            SET status = 3
-            WHERE no_order = '${no_order}'
-        `
-        await asyncQuery(queryOrder)
+        if (isConfirm) {
+            const queryOrder = `UPDATE orders
+                SET status = 3
+                WHERE no_order = '${no_order}'
+            `
 
-        res.status(200).send('confirmed')
+            await asyncQuery(queryOrder);
+            res.status(200).send('confirmed')
+        } else {
+            const queryOrder = `UPDATE orders
+                SET status = 6
+                WHERE no_order = '${no_order}'
+            `
+
+            await asyncQuery(queryOrder);
+            res.status(200).send('canceled')
+        }
     } catch (err) {
-
+        res.status(400).send(err)
     }
 }
 
-module.exports = { getProducts, addProduct, editProduct, deleteProduct, getCategories, addCategory, editCategory, deleteCategory, stockOperasional, stockOperasionalAll, getOrders }
+module.exports = { getProducts, addProduct, editProduct, deleteProduct, getCategories, addCategory, editCategory, deleteCategory, stockOperasional, stockOperasionalAll, getOrders, confirmationOrder }
