@@ -1,24 +1,38 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { Button, Container, Jumbotron, Modal } from 'react-bootstrap'
+import { Button, Container, Image, Jumbotron, Modal } from 'react-bootstrap'
 import BootstrapTable from 'react-bootstrap-table-next'
 import paginationFactory from 'react-bootstrap-table2-paginator'
 
-const ModalConfirm = ({ show, handleClose, confirmation }) => {
+const ModalConfirm = ({ show, handleClose, confirmation, order }) => {
     const onClickConfirm = () => {
         confirmation('order confirm')
+        handleClose()
+    }
+
+    const onClickCancel = () => {
+        confirmation('canceled')
         handleClose()
     }
 
     return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
-                <Modal.Title>Delete</Modal.Title>
+                <Modal.Title>Confirmation</Modal.Title>
             </Modal.Header>
-            <Modal.Body>Are you sure want to delete ?</Modal.Body>
+            <Modal.Body className="text-center">
+                <Image src={'http://localhost:1000' + order.no_order || 'https://templates.invoicehome.com/invoice-template-us-neat-750px.png'} width="100" height="200" alt="invoice.img" />
+
+                <p>
+                    Confirmation for order no. {order.no_order}
+                </p>
+            </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onClickConfirm}>
-                    Delete
+                    Confirm
+                </Button>
+                <Button variant="secondary" onClick={onClickCancel}>
+                    Reject
                 </Button>
                 <Button variant="primary" onClick={handleClose}>
                     Cancel
@@ -58,7 +72,8 @@ function Order() {
         setOrders(result)
         // axios
         try {
-            const res = await axios.post(`http://localhost:1000/admin/orders/confirmation/${order.no_order}`)
+            const isConfirm = message === 'canceled' ? false : true;
+            const res = await axios.post(`http://localhost:1000/admin/orders/confirmation/${order.no_order}`, { isConfirm })
             setOrder({})
             console.log(res)
 
@@ -113,6 +128,7 @@ function Order() {
                     show={show === order.no_order ? true : false}
                     handleClose={handleClose}
                     confirmation={confirmation}
+                    order={order}
                 />
             </Container>
         </Jumbotron>
