@@ -84,10 +84,19 @@ module.exports = {
         }
     },
     deleteCart: async (req, res) => {
-        const id = (req.params.id)
+        const id = (req.body.id_order)
+        const no_order = (req.body.no_order)
         try {
-            const delQuery = `DELETE FROM order_details where id_order_details = ${db.escape(id)}`
-            await asyncQuery(delQuery)
+            const getCart = `select * from order_details where no_order = ${db.escape(no_order)}`
+            const result = await asyncQuery(getCart)
+
+            if (result.length === 1) {
+                const delCart = `delete from orders where no_order = ${db.escape(no_order)}`
+                await asyncQuery(delCart)
+            } else {
+                const delQuery = `DELETE FROM order_details where id_order_details = ${db.escape(id)}`
+                await asyncQuery(delQuery)
+            }
 
             res.status(200).send('Delete Success')
         }

@@ -242,6 +242,7 @@ const History = () => {
 		axios.post(`http://localhost:1000/order/arrived/${idOrder}`)
 		.then((res)=>{
 			setData(temp)
+			{refreshPage()}
 		})
 		.catch((err)=> console.log(err))
 	}
