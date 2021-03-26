@@ -25,7 +25,8 @@ class CartPage extends Component {
 			getLocationUser: null,
 			toast: [false, ""],
 			city: null,
-            history: false
+            history: false,
+			modalDelete : false
 		};
 	}
 
@@ -63,12 +64,14 @@ class CartPage extends Component {
 	};
 	handleDelete = (index) => {
 		let tempCart = [...this.state.data];
-		let id_order = tempCart[index].id_order_details;
+		let no_id = {
+			no_order : tempCart[index].no_order,
+			id_order : tempCart[index].id_order_details
+		}
 
-		tempCart.splice(index, 1);
-
-		Axios.delete(`http://localhost:1000/cart/delCart/${id_order}`)
+		Axios.post(`http://localhost:1000/cart/delCart`, no_id)
 			.then((res) => {
+				tempCart.splice(index, 1);
 				this.setState({ data: tempCart });
 			})
 			.catch((err) => console.log(err));
@@ -276,7 +279,7 @@ class CartPage extends Component {
 				<div style={{ display: "flex", justifyContent: "space-between" }}>
 					<h2>Hello {this.props.username} this is your cart</h2>
 					<div>
-					<Button variant="danger" onClick={this.handleDeleteCart}>
+					<Button variant="danger" onClick={()=> this.setState({modalDelete : true})}>
 						Delete All
 					</Button>
 					<Button
@@ -316,6 +319,21 @@ class CartPage extends Component {
 				</div>
 				</>
 				) : (<h1>Cart is Empty</h1>)}
+				<Modal show={this.state.modalDelete} onHide={()=> this.setState({modalDelete : false})}>
+        		<Modal.Header closeButton>
+         	 		<Modal.Title>Warning</Modal.Title>
+        			</Modal.Header>
+        			<Modal.Body>Are you sure to delete this cart ?</Modal.Body>
+        			<Modal.Footer>
+          			<Button variant="secondary" onClick={()=> this.setState({modalDelete : false})}>
+            			Close
+          			</Button>
+          			<Button variant="success" onClick={this.handleDeleteCart}>
+            			Yes
+          			</Button>
+        			</Modal.Footer>
+      			</Modal>
+
 				<Modal
 					show={this.state.modal}
 					onHide={() => this.setState({ modal: false, total_stock: 0 })}

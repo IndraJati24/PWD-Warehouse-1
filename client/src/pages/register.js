@@ -7,6 +7,7 @@ import {
 	InputGroup,
 	Modal,
 } from "react-bootstrap";
+import {Redirect} from "react-router-dom"
 import { connect } from "react-redux";
 import { register } from "../action";
 
@@ -16,6 +17,7 @@ class Register extends React.Component {
 		this.state = {
 			show: false,
 			openPass: false,
+			toLogin : false
 		};
 	}
 	isOpen = () =>
@@ -36,6 +38,7 @@ class Register extends React.Component {
 		this.refs.password.value = "";
 		this.refs.email.value = "";
 
+		this.setState({toLogin: true})
 		alert("Register success please check your email");
 	};
 
