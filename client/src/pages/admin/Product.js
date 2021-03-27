@@ -6,7 +6,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 
 
-const ModalAdd = ({ showAdd, addProduct, handleCloseAdd }) => {
+const ModalAdd = ({ showAdd, addProduct, handleCloseAdd, categories }) => {
     const defaultData = {
         name: '',
         price: 0,
@@ -17,7 +17,6 @@ const ModalAdd = ({ showAdd, addProduct, handleCloseAdd }) => {
     const [data, setData] = useState(defaultData)
 
     const onClickAdd = () => {
-        // console.log(data)
         addProduct(data);
         setData(defaultData);
     }
@@ -53,9 +52,10 @@ const ModalAdd = ({ showAdd, addProduct, handleCloseAdd }) => {
                     <Form.Group>
                         <Form.Label>Category</Form.Label>
                         <Form.Control as="select">
-                            <option>1</option>
+                            {/* <option>1</option>
                             <option>2</option>
-                            <option>3</option>
+                            <option>3</option> */}
+                            
                         </Form.Control>
                     </Form.Group>
                 </Form>
@@ -154,6 +154,7 @@ const ModalEdit = ({ showEdit, handleCloseEdit, product, editProduct, setProduct
 
 function Product() {
     const [products, setProducts] = useState([])
+    const [categories, setCategories] = useState([])
     const [product, setProduct] = useState({});
     const [show, setShow] = useState(0); //show delete modal
     const [showEdit, setShowEdit] = useState(0);
@@ -165,18 +166,22 @@ function Product() {
         }).catch(err => {
             console.log(err.response)
         })
+
+        axios.get('http://localhost:1000/admin/categories').then(({ data }) => {
+            setCategories(data)
+        }).catch(err => {
+            console.log(err.response)
+        })
     }, [])
 
     const handleClose = () => setShow(0);
     const handleShow = (product) => {
-        console.log(product)
         setShow(product.id_product)
         setProduct(product)
     };
 
     const handleCloseEdit = () => setShowEdit(0);
     const handleShowEdit = (product) => {
-        console.log(product, 'set product')
         setShowEdit(product.id_product)
         setProduct(product)
     }
@@ -265,7 +270,12 @@ function Product() {
                 <Button onClick={handleShowAdd} className="mb-2">Add Product</Button>
 
                 <BootstrapTable keyField="id_product" data={products} columns={columnsOption} pagination={paginationFactory()} />
-                <ModalAdd showAdd={showAdd} handleCloseAdd={handleCloseAdd} addProduct={addProduct} />
+                <ModalAdd 
+                    showAdd={showAdd} 
+                    handleCloseAdd={handleCloseAdd} 
+                    addProduct={addProduct} 
+                    categories={categories} 
+                />
                 <ModalDelete
                     show={show === product.id_product ? true : false}
                     handleClose={handleClose}
@@ -278,6 +288,7 @@ function Product() {
                     product={product}
                     setProduct={setProduct}
                     editProduct={editProduct}
+                    categories={categories} 
                 />
             </Container>
         </Jumbotron>
