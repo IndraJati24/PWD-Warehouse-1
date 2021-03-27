@@ -44,21 +44,33 @@ const Navigation = () => {
 					<Nav.Link as={Link} to="/login" onClick={() => dispatch(logout())}>
 						Logout
 					</Nav.Link>*/}
-					<Nav.Link as={Link} to="/history">
+					{/* <Nav.Link as={Link} to="/history">
 						History
-					</Nav.Link> 
+					</Nav.Link> */}
 					<Nav.Link as={Link} to="/cart">
 						<i className="fas fa-shopping-cart"></i>
 					</Nav.Link>
 					{user.id_user ? (
-						<Nav.Link as={Link} to="/login" onClick={() => dispatch(logout())}>
-							Logout
-						</Nav.Link>
+						<NavDropdown
+							title={user.username||"username"}
+							id="collasible-nav-dropdown"
+							style={{ marginRight: 15 }}
+						>
+						<NavDropdown.Item  as={Link} to="/history">
+						History
+						</NavDropdown.Item>
+						<NavDropdown.Item as={Link} to="/login" onClick={() => dispatch(logout())}>
+						Logout
+						</NavDropdown.Item>
+						</NavDropdown>
+						// <Nav.Link as={Link} to="/login" onClick={() => dispatch(logout())}>
+						// 	Logout
+						// </Nav.Link>
 					) : (
-							<Nav.Link as={Link} to="/login">
-								Login
-							</Nav.Link>
-						)}
+						<Nav.Link as={Link} to="/login">
+							Login
+						</Nav.Link>
+					)}
 				</Nav>
 			</Navbar.Collapse>
 		</Navbar>

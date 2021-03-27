@@ -33,6 +33,7 @@ const History = () => {
 				};
 				let res = await axios.get(`http://localhost:1000/order/getOrderDetail`, option);
 				let res2 = await axios.get(`http://localhost:1000/order/getAllOrder`, option);
+				console.log(res2.data);
 				setDetail(res.data);
 				setHistory(res2.data);
 			};

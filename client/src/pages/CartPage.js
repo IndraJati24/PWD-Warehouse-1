@@ -353,9 +353,12 @@ class CartPage extends Component {
 				</Modal>
 
 				<Modal
-					backdrop="static"
 					show={this.state.modalCheckOut}
-					onHide={() => this.setState({ modalCheckOut: false })}
+					onHide={() => this.setState({ modalCheckOut: false,invalidNama: false,
+						invalidTelepon: false,
+						invalidAlamat: false,
+						pembayaran: null,
+						getLocationUser: null, })}
 				>
 					<Modal.Header closeButton>
 						<Modal.Title>Notification</Modal.Title>
@@ -473,7 +476,11 @@ class CartPage extends Component {
 							</Button>
 							<Button
 								variant="primary"
-								onClick={() => this.setState({ modalCheckOut: false })}
+								onClick={() => this.setState({ modalCheckOut: false,invalidNama: false,
+									invalidTelepon: false,
+									invalidAlamat: false,
+									pembayaran: null,
+									getLocationUser: null, })}
 							>
 								Close
 							</Button>
