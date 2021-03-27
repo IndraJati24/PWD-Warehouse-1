@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Container, Form, Image, Jumbotron, Modal, Table } from 'react-bootstrap'
+import { Button, Container, Form, Image, Jumbotron, Modal } from 'react-bootstrap'
 import axios from 'axios'
 
 import BootstrapTable from 'react-bootstrap-table-next';

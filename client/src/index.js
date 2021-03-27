@@ -4,6 +4,7 @@ import App from "./App";
 import "bootstrap/dist/css/bootstrap.min.css";
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { BrowserRouter as Router } from "react-router-dom";
+import { HelmetProvider } from 'react-helmet-async'
 
 import allReducer from "./reducer";
 import { Provider } from "react-redux";
@@ -19,7 +20,9 @@ globalState.subscribe(() =>
 ReactDOM.render(
   <Provider store={globalState}>
     <Router>
-      <App />
+      <HelmetProvider>
+        <App />
+      </HelmetProvider>
     </Router>
   </Provider>,
   document.getElementById("root")

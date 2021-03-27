@@ -7,7 +7,8 @@ import {
 	InputGroup,
 	Modal,
 } from "react-bootstrap";
-import {Redirect} from "react-router-dom"
+import { Helmet } from 'react-helmet-async'
+
 import { connect } from "react-redux";
 import { register } from "../action";
 
@@ -17,7 +18,7 @@ class Register extends React.Component {
 		this.state = {
 			show: false,
 			openPass: false,
-			toLogin : false
+			toLogin: false
 		};
 	}
 	isOpen = () =>
@@ -38,13 +39,16 @@ class Register extends React.Component {
 		this.refs.password.value = "";
 		this.refs.email.value = "";
 
-		this.setState({toLogin: true})
+		this.setState({ toLogin: true })
 		alert("Register success please check your email");
 	};
 
 	render() {
 		return (
 			<Jumbotron style={styles.jumbotron}>
+				<Helmet>
+					<title>Register | Warehouse</title>
+				</Helmet>
 				<Container className="text-center px-5">
 					<h1 style={{ textAlign: "center" }}>Register</h1>
 					<Form style={styles.form}>
@@ -62,12 +66,12 @@ class Register extends React.Component {
 									ref="username"
 								/>
 							</InputGroup>
-								<small style={{color : "blue", fontSize: 12}}>*note : must have min 5 character</small>
+							<small style={{ color: "blue", fontSize: 12 }}>*note : must have min 5 character</small>
 						</Form.Group>
 
 						<Form.Group className="text-left">
 							<Form.Label>Password</Form.Label>
-							<InputGroup style={{ display: "flex"}}>
+							<InputGroup style={{ display: "flex" }}>
 								<InputGroup.Prepend style={{ width: 50 }}>
 									<InputGroup.Text>
 										<i
@@ -85,7 +89,7 @@ class Register extends React.Component {
 									ref="password"
 								/>
 							</InputGroup>
-							<small style={{color : "blue", fontSize: 12}}>*note : must have min 5 character, include number and symbol (!@#$%^&*)</small>
+							<small style={{ color: "blue", fontSize: 12 }}>*note : must have min 5 character, include number and symbol (!@#$%^&*)</small>
 						</Form.Group>
 
 						<Form.Group className="text-left">

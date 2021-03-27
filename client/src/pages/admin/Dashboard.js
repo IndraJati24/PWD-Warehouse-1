@@ -1,13 +1,19 @@
 import React from 'react'
-import { Col, Nav, Row, Tab, Jumbotron, Container, Navbar } from 'react-bootstrap'
+import { Col, Nav, Row, Tab } from 'react-bootstrap'
 import Category from './Category'
 import Order from './Order'
 import Product from './Product'
 import StockOperasional from './StockOperasional'
 import Penjualan from "./Penjualan";
+import { Helmet } from 'react-helmet-async'
+
+
 function Dashboard() {
     return (
         <Tab.Container id="left-tabs-example" defaultActiveKey="product">
+            <Helmet>
+                <title>Admin | Warehouse</title>
+            </Helmet>
             <Row>
                 <Col sm={2} className="bg-dark p-4">
                     <Nav variant="pills" className="flex-column" style={{ marginBottom: '183%' }} >
