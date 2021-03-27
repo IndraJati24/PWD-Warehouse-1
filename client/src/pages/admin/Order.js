@@ -21,7 +21,7 @@ const ModalConfirm = ({ show, handleClose, confirmation, order }) => {
                 <Modal.Title>Confirmation</Modal.Title>
             </Modal.Header>
             <Modal.Body className="text-center">
-                <Image src={'http://localhost:1000' + order.no_order || 'https://templates.invoicehome.com/invoice-template-us-neat-750px.png'} width="100" height="200" alt="invoice.img" />
+                <Image src={"http://localhost:1000/"+order.bukti_bayar || 'https://templates.invoicehome.com/invoice-template-us-neat-750px.png'} width="100" height="200" alt="invoice.img" />
 
                 <p>
                     Confirmation for order no. {order.no_order}
