@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import {Redirect} from "react-router-dom"
-import { Button, Table, Form, Modal, Row, Image, Toast } from "react-bootstrap";
+import { Redirect } from "react-router-dom"
+import { Button, Table, Form, Modal, Image, Toast } from "react-bootstrap";
 import Axios from "axios";
 
 import OpencageAutocomplete from "../assets/OpencageAutocomplete";
@@ -25,8 +25,8 @@ class CartPage extends Component {
 			getLocationUser: null,
 			toast: [false, ""],
 			city: null,
-            history: false,
-			modalDelete : false
+			history: false,
+			modalDelete: false
 		};
 	}
 
@@ -65,8 +65,8 @@ class CartPage extends Component {
 	handleDelete = (index) => {
 		let tempCart = [...this.state.data];
 		let no_id = {
-			no_order : tempCart[index].no_order,
-			id_order : tempCart[index].id_order_details
+			no_order: tempCart[index].no_order,
+			id_order: tempCart[index].id_order_details
 		}
 
 		Axios.post(`http://localhost:1000/cart/delCart`, no_id)
@@ -198,7 +198,7 @@ class CartPage extends Component {
 	};
 
 	handleSubmit = () => {
-		let { getLocationUser, pembayaran, modalCheckOut, data, city } = this.state;
+		let { getLocationUser, pembayaran, data, city } = this.state;
 
 		let nama = this.refs.nama.value;
 		let telepon = this.refs.telepon.value;
@@ -229,32 +229,32 @@ class CartPage extends Component {
 			lng: getLocationUser.lng,
 		};
 
-        let invoice={
-            no_order: data[0].no_order,
-            alamat,
-            total_harga:this.totalPrice().toLocaleString(),
-            email:this.props.email,
-			tgl_transaksi:this.state.data[0].date,
-			cart:data
-        }
+		let invoice = {
+			no_order: data[0].no_order,
+			alamat,
+			total_harga: this.totalPrice().toLocaleString(),
+			email: this.props.email,
+			tgl_transaksi: this.state.data[0].date,
+			cart: data
+		}
 
 		Axios.post(`http://localhost:1000/order/wareLoc`, gudang)
 			.then((res) => {
 				Axios.post(`http://localhost:1000/user/address`, updateAlamat)
 					.then((res) => {
-                        // Axios.post("http://localhost:1000/cart/invoice",invoice)
-                        // .then((res)=>{
-                            this.setState({
-                                invalidNama: false,
-                                invalidTelepon: false,
-                                invalidAlamat: false,
-                                toast: [true, "Transaksi Sukses, Silahkan Lanjutkan ke Pembayaran..."],
-                                modalCheckOut: false,
-                                history: true
-                            })
-							alert("transaction success please check history menu")
-                        // })
-                        // .catch((err) => console.log(err));
+						// Axios.post("http://localhost:1000/cart/invoice",invoice)
+						// .then((res)=>{
+						this.setState({
+							invalidNama: false,
+							invalidTelepon: false,
+							invalidAlamat: false,
+							toast: [true, "Transaksi Sukses, Silahkan Lanjutkan ke Pembayaran..."],
+							modalCheckOut: false,
+							history: true
+						})
+						alert("transaction success please check history menu")
+						// })
+						// .catch((err) => console.log(err));
 					})
 					.catch((err) => console.log(err));
 			})
@@ -263,76 +263,76 @@ class CartPage extends Component {
 
 	handleDeleteCart = () => {
 		Axios.delete(`http://localhost:1000/cart/delAllCart/${this.props.id}`)
-		.then((res)=>{
-			this.setState({data : []})
-		})
-		.catch((err)=>console.log(err))
+			.then((res) => {
+				this.setState({ data: [] })
+			})
+			.catch((err) => console.log(err))
 	}
 
 	render() {
 		let apiKey = "37603d38a85f4f36bda754c5aabfac4a";
-        if(this.state.history) return <Redirect to="/"/>
+		if (this.state.history) return <Redirect to="/" />
 		return (
 			<div style={{ padding: "10px 30px" }}>
 				{this.state.data.length !== 0 ? (
-				<>
-				<div style={{ display: "flex", justifyContent: "space-between" }}>
-					<h2>Hello {this.props.username} this is your cart</h2>
-					<div>
-					<Button variant="danger" onClick={()=> this.setState({modalDelete : true})}>
-						Delete All
+					<>
+						<div style={{ display: "flex", justifyContent: "space-between" }}>
+							<h2>Hello {this.props.username} this is your cart</h2>
+							<div>
+								<Button variant="danger" onClick={() => this.setState({ modalDelete: true })}>
+									Delete All
 					</Button>
-					<Button
-						variant="success"
-						onClick={() => this.setState({ modalCheckOut: true })}
-						disabled={this.state.data.length===0 ? true : false}
-					>
-						Checkout
+								<Button
+									variant="success"
+									onClick={() => this.setState({ modalCheckOut: true })}
+									disabled={this.state.data.length === 0 ? true : false}
+								>
+									Checkout
 					</Button>
-					</div>
-				</div>
-				<div style={{ marginTop: 20 }}>
-					<Table striped bordered hover>
-						<thead>
-							<tr>
-								<th>#</th>
-								<th>Name Product</th>
-								<th>Image</th>
-								<th>Price</th>
-								<th>Quantity</th>
-								<th>Total Price</th>
-								<th>Action</th>
-							</tr>
-						</thead>
-						<tbody>
-							{this.tableBody()}
-							<tr>
-								<td colSpan="5" style={styles.total}>
-									Grand Total
+							</div>
+						</div>
+						<div style={{ marginTop: 20 }}>
+							<Table striped bordered hover>
+								<thead>
+									<tr>
+										<th>#</th>
+										<th>Name Product</th>
+										<th>Image</th>
+										<th>Price</th>
+										<th>Quantity</th>
+										<th>Total Price</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									{this.tableBody()}
+									<tr>
+										<td colSpan="5" style={styles.total}>
+											Grand Total
 								</td>
-								<td style={styles.total}>
-									{this.totalPrice().toLocaleString()}
-								</td>
-							</tr>
-						</tbody>
-					</Table>
-				</div>
-				</>
+										<td style={styles.total}>
+											{this.totalPrice().toLocaleString()}
+										</td>
+									</tr>
+								</tbody>
+							</Table>
+						</div>
+					</>
 				) : (<h1>Cart is Empty</h1>)}
-				<Modal show={this.state.modalDelete} onHide={()=> this.setState({modalDelete : false})}>
-        		<Modal.Header closeButton>
-         	 		<Modal.Title>Warning</Modal.Title>
-        			</Modal.Header>
-        			<Modal.Body>Are you sure to delete this cart ?</Modal.Body>
-        			<Modal.Footer>
-          			<Button variant="secondary" onClick={()=> this.setState({modalDelete : false})}>
-            			Close
+				<Modal show={this.state.modalDelete} onHide={() => this.setState({ modalDelete: false })}>
+					<Modal.Header closeButton>
+						<Modal.Title>Warning</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>Are you sure to delete this cart ?</Modal.Body>
+					<Modal.Footer>
+						<Button variant="secondary" onClick={() => this.setState({ modalDelete: false })}>
+							Close
           			</Button>
-          			<Button variant="success" onClick={this.handleDeleteCart}>
-            			Yes
+						<Button variant="success" onClick={this.handleDeleteCart}>
+							Yes
           			</Button>
-        			</Modal.Footer>
-      			</Modal>
+					</Modal.Footer>
+				</Modal>
 
 				<Modal
 					show={this.state.modal}
@@ -354,11 +354,13 @@ class CartPage extends Component {
 
 				<Modal
 					show={this.state.modalCheckOut}
-					onHide={() => this.setState({ modalCheckOut: false,invalidNama: false,
+					onHide={() => this.setState({
+						modalCheckOut: false, invalidNama: false,
 						invalidTelepon: false,
 						invalidAlamat: false,
 						pembayaran: null,
-						getLocationUser: null, })}
+						getLocationUser: null,
+					})}
 				>
 					<Modal.Header closeButton>
 						<Modal.Title>Notification</Modal.Title>
@@ -476,11 +478,13 @@ class CartPage extends Component {
 							</Button>
 							<Button
 								variant="primary"
-								onClick={() => this.setState({ modalCheckOut: false,invalidNama: false,
+								onClick={() => this.setState({
+									modalCheckOut: false, invalidNama: false,
 									invalidTelepon: false,
 									invalidAlamat: false,
 									pembayaran: null,
-									getLocationUser: null, })}
+									getLocationUser: null,
+								})}
 							>
 								Close
 							</Button>
@@ -522,7 +526,7 @@ const mapStateToProps = (state) => {
 	return {
 		id: state.user.user.id_user,
 		username: state.user.user.username,
-        email:state.user.user.email
+		email: state.user.user.email
 	};
 };
 export default connect(mapStateToProps)(CartPage);

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Image, Button, Modal, Form, Toast,Card } from "react-bootstrap";
+import { Image, Button, Modal, Form, Toast, Card } from "react-bootstrap";
 import Axios from "axios";
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
+
 class DetailProduct extends Component {
     constructor(props) {
         super(props);
@@ -13,7 +13,7 @@ class DetailProduct extends Component {
             toast: false,
             cart: [],
             kategoriSama: [],
-            allProduct:[]
+            allProduct: []
         };
     }
     componentDidMount() {
@@ -24,8 +24,8 @@ class DetailProduct extends Component {
                 Axios.get(`http://localhost:1000/cart/getCart/${this.props.id}`)
                     .then((res2) => {
                         let detailPage = res.data.filter(item => item.id_product === parseInt(this.props.match.params.id))[0]
-                        let kategoriSerupa = res.data.filter(item => item.id_kategori === parseInt(detailPage.id_kategori) && item.total_stock>0 &&item.id_product!=detailPage.id_product)
-                        this.setState({ cart: res2.data, product: detailPage, kategoriSama: kategoriSerupa,allProduct:res.data });
+                        let kategoriSerupa = res.data.filter(item => item.id_kategori === parseInt(detailPage.id_kategori) && item.total_stock > 0 && item.id_product != detailPage.id_product)
+                        this.setState({ cart: res2.data, product: detailPage, kategoriSama: kategoriSerupa, allProduct: res.data });
                     })
                     .catch((err) => console.log(err));
             })
@@ -34,17 +34,17 @@ class DetailProduct extends Component {
 
     // componentDidUpdate = async () => {
 
-	// 		Axios.get('http://localhost:1000/product/getAll')
-	// 			.then((res) => {
+    // 		Axios.get('http://localhost:1000/product/getAll')
+    // 			.then((res) => {
     //                 let detailPage = res.data.filter(item => item.id_product === parseInt(this.props.match.params.id))[0]
     //                 let kategoriSerupa = res.data.filter(item => item.id_kategori === parseInt(detailPage.id_kategori) && item.total_stock>0 &&item.id_product!=detailPage.id_product)
 
     //                 this.setState({ product: detailPage,kategoriSama: kategoriSerupa });
-	// 				// console.log(res.data);
-	// 			})
-	// 			.catch((err) => console.log(err));
-		
-	// };
+    // 				// console.log(res.data);
+    // 			})
+    // 			.catch((err) => console.log(err));
+
+    // };
 
     handleMinus = () => {
         if (this.state.qty <= 1) return;
@@ -124,10 +124,10 @@ class DetailProduct extends Component {
 
     };
 
-    handleBuyCat=(idx)=>{
+    handleBuyCat = (idx) => {
         let detailPage = this.state.allProduct.filter(item => item.id_product === parseInt(idx))[0]
-        let kategoriSerupa = this.state.allProduct.filter(item => item.id_kategori === parseInt(detailPage.id_kategori) && item.total_stock>0 &&item.id_product!=detailPage.id_product)
-        this.setState({ product: detailPage, kategoriSama: kategoriSerupa,qty:1 });
+        let kategoriSerupa = this.state.allProduct.filter(item => item.id_kategori === parseInt(detailPage.id_kategori) && item.total_stock > 0 && item.id_product != detailPage.id_product)
+        this.setState({ product: detailPage, kategoriSama: kategoriSerupa, qty: 1 });
     }
 
     render() {
@@ -184,8 +184,8 @@ class DetailProduct extends Component {
                     </div>
                 </div>
                 <h2>Kategori Serupa</h2>
-                <div style={{display:"flex",flexDirection:"row"}}>
-                    {kategoriSama.length === 0 ? null : kategoriSama.slice(0, 5).map((item,index) => {
+                <div style={{ display: "flex", flexDirection: "row" }}>
+                    {kategoriSama.length === 0 ? null : kategoriSama.slice(0, 5).map((item, index) => {
                         return (
                             <Card style={{ width: '12.5rem', margin: "1rem 1rem" }} key={index}>
                                 <Card.Img variant="top" src={item.image} style={{ height: "13rem" }} />
@@ -194,7 +194,7 @@ class DetailProduct extends Component {
                                         <Card.Title>{item.name}</Card.Title>
                                         <Card.Text>IDR {item.price.toLocaleString()}</Card.Text>
                                         <div >
-                                            <Button style={{ width: "100%", marginRight: "8px" }} variant="success" onClick={()=>this.handleBuyCat(item.id_product)} >Buy</Button>
+                                            <Button style={{ width: "100%", marginRight: "8px" }} variant="success" onClick={() => this.handleBuyCat(item.id_product)} >Buy</Button>
                                         </div>
                                     </div>
                                 </Card.Body>

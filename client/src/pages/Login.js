@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Jumbotron,
@@ -10,6 +10,7 @@ import {
 import { Link, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux'
 // import axios from "axios";
+import { Helmet } from 'react-helmet-async'
 import { login } from '../action'
 
 const defaultData = {
@@ -20,12 +21,17 @@ const defaultData = {
 const Login = () => {
   const history = useHistory();
   const dispatch = useDispatch()
-  const { isLoading } = useSelector((state) => state.user);
-  // console.log('state', isLoading)
+  let { isLoading, logError } = useSelector((state) => state.user);
 
   const [openPass, setOpenPass] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [data, setData] = useState(defaultData);
+
+  useEffect(() => {
+    if (!!logError.length) setErrorMessage(logError)
+    else setErrorMessage('')
+
+  }, [logError])
 
   const isOpen = () => (openPass ? "fas fa-eye" : "fas fa-eye-slash");
 
@@ -38,7 +44,7 @@ const Login = () => {
   const onSubmitForm = (e) => {
     e.preventDefault();
 
-    dispatch(login(data, history))
+    dispatch(login(data, history));
     // login();
     // axios
     //   .post("http://localhost:1000/login", data)
@@ -54,13 +60,19 @@ const Login = () => {
 
   return (
     <Jumbotron style={styles.jumbotron}>
+      <Helmet>
+        <title>Login | Warehouse</title>
+      </Helmet>
       <Container className="text-center px-5">
         <h1>Login</h1>
         <Form style={styles.form} onSubmit={onSubmitForm}>
           {errorMessage && (
             <Alert
               variant="danger"
-              onClose={() => setErrorMessage("")}
+              onClose={() => {
+                // setErrorMessage("")
+                dispatch({ type: 'CLEAR_ERROR' })
+              }}
               dismissible
             >
               {errorMessage}

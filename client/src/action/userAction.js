@@ -36,10 +36,10 @@ export const login = (data, history) => async (dispatch) => {
 		history.push('/')
 		dispatch({ type: "LOADING", payload: false });
 	} catch (err) {
-		console.log(err)
+		console.log(err.response)
+		dispatch({ type: 'ERROR', payload: err.response.data });
+		dispatch({ type: 'LOADING', payload: false });
 	}
-	// dispatch({ type: 'LOGOUT' })
-	// console.log('dispatch')
 }
 
 export const keepLogin = () => async (dispatch) => {

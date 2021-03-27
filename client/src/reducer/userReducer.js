@@ -28,6 +28,11 @@ export const userReducer = (state = INITIAL_STATE, action) => {
 			};
 		case "LOGOUT":
 			return INITIAL_STATE;
+		case "CLEAR_ERROR":
+			return {
+				...state,
+				logError: []
+			}
 		default:
 			return state;
 	}

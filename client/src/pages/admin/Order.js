@@ -4,7 +4,7 @@ import { Button, Container, Image, Jumbotron, Modal } from 'react-bootstrap'
 import BootstrapTable from 'react-bootstrap-table-next'
 import paginationFactory from 'react-bootstrap-table2-paginator'
 
-const ModalConfirm = ({ show, handleClose, confirmation, order }) => {
+const ModalConfirm = ({ show, handleClose, confirmation, order, deliver }) => {
     const onClickConfirm = () => {
         confirmation('order confirm')
         handleClose()
@@ -15,13 +15,43 @@ const ModalConfirm = ({ show, handleClose, confirmation, order }) => {
         handleClose()
     }
 
+    const onClickDeliver = () => {
+        deliver('delivered')
+        handleClose()
+    }
+
+    if (parseInt(order.status) === 3) {
+        return (
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Delivery</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="text-center">
+                    <Image src={"http://localhost:1000/" + order.bukti_bayar || 'https://templates.invoicehome.com/invoice-template-us-neat-750px.png'} width="100" height="200" alt="invoice.img" />
+
+                    <p>
+                        Deliver for order no. {order.no_order}
+                    </p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={onClickDeliver}>
+                        Deliver
+                    </Button>
+                    <Button variant="primary" onClick={handleClose}>
+                        Cancel
+                </Button>
+                </Modal.Footer>
+            </Modal>
+        )
+    }
+
     return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
                 <Modal.Title>Confirmation</Modal.Title>
             </Modal.Header>
             <Modal.Body className="text-center">
-                <Image src={"http://localhost:1000/"+order.bukti_bayar || 'https://templates.invoicehome.com/invoice-template-us-neat-750px.png'} width="100" height="200" alt="invoice.img" />
+                <Image src={"http://localhost:1000/" + order.bukti_bayar || 'https://templates.invoicehome.com/invoice-template-us-neat-750px.png'} width="100" height="200" alt="invoice.img" />
 
                 <p>
                     Confirmation for order no. {order.no_order}
@@ -82,6 +112,19 @@ function Order() {
         }
     }
 
+    const deliver = async (message) => {
+        const result = orders.map(data => data.no_order === order.no_order ? { ...data, status_name: message } : data)
+        setOrders(result)
+        console.log(message)
+
+        try {
+            await axios.post(`http://localhost:1000/admin/orders/deliver/${order.no_order}`)
+            setOrder({})
+        } catch (err) {
+            console.log(err.response)
+        }
+    }
+
     return (
         <Jumbotron>
             <Container>
@@ -118,7 +161,15 @@ function Order() {
                                 const status = row.status_name
 
                                 return (
-                                    <Button onClick={() => handleOpen(row)} disabled={status.includes('pending') ? false : true} >Confirm</Button>
+                                    <>
+                                        {/* <Button onClick={() => handleOpen(row)} disabled={status.includes('pending') ? false : true} >Confirm</Button> */}
+                                        {status.includes('pending') && (
+                                            <Button onClick={() => handleOpen(row)} disabled={status.includes('pending') ? false : true} >Confirm</Button>
+                                        )}
+                                        {status.includes('confirm') && (
+                                            <Button onClick={() => handleOpen(row)}>Deliver</Button>
+                                        )}
+                                    </>
                                 )
                             }
                         }
@@ -129,6 +180,7 @@ function Order() {
                     handleClose={handleClose}
                     confirmation={confirmation}
                     order={order}
+                    deliver={deliver}
                 />
             </Container>
         </Jumbotron>
