@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Button, Modal, Form, Tab, Nav, Col, Row, Accordion, Card, Table } from "react-bootstrap";
-import { useSelector } from "react-redux";
 import axios from "axios";
 import images from "../assets/images/no-image.png"
 
@@ -18,10 +17,6 @@ const History = () => {
 	const [modalCancel, setModalCancel] = useState(false)
 	const [modalCancelOrder, setModalCancelOrder] = useState(false)
 	const [picture, setPicture] = useState("")
-
-	const { id } = useSelector((state) => {
-		return { id: state.user.user.id_user }
-	});
 
 	const refreshPage = () => {
 		window.location.reload();
@@ -42,19 +37,11 @@ const History = () => {
 	}, []);
 
 	React.useEffect(() => {
-		let result = []
-		history.forEach((item) => {
-			if (item.status_name === status) {
-				result.push(item)
-			}
-		});
+		let result = history.filter((item)=> item.status_name === status)
 		setData(result);
-	}, [status]);
-
-	React.useEffect(() => {
-		let result = detail.filter((item) => item.no_order === orderIdHistory);
-		setDetailHistory(result);
-	}, [orderIdHistory]);
+		let result1 = detail.filter((item) => item.no_order === orderIdHistory);
+		setDetailHistory(result1);
+	}, [status, orderIdHistory])
 
 	const tablePayment = () => {
 		return detailHistory.map((item, index) => {
@@ -63,7 +50,7 @@ const History = () => {
 					<td>{index + 1}</td>
 					<td>{item.name}</td>
 					<td style={{ width: 150 }}>
-						<img src={item.image} height="100px" />
+						<img src={item.image} height="100px" alt={`gambar - ${index}`}/>
 					</td>
 					<td style={{ width: 100 }}>{item.price.toLocaleString()}</td>
 					<td style={{ width: 100 }}>{item.quantity}</td>
@@ -73,22 +60,6 @@ const History = () => {
 		});
 	};
 
-	const tableHistory = () => {
-		return detailHistory.map((item, index) => {
-			return (
-				<tr key={index}>
-					<td>{index + 1}</td>
-					<td>{item.name}</td>
-					<td style={{ width: 150 }}>
-						<img src={item.image} height="100px" />
-					</td>
-					<td style={{ width: 100 }}>{item.price.toLocaleString()}</td>
-					<td style={{ width: 100 }}>{item.quantity}</td>
-					<td>{item.total.toLocaleString()}</td>
-				</tr>
-			);
-		});
-	};
 
 	const totalPrice = () => {
 		let counter = 0;
@@ -154,7 +125,7 @@ const History = () => {
 					<Modal.Title>Upload Buktibayar</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
-					<img src={picture ? URL_IMG + picture : images} alt="No-Image" height="100px" />
+					<img src={picture ? URL_IMG + picture : images} alt="gambar" height="100px" />
 					<Form.File id="formcheck-api-regular">
 						<Form.File.Input onChange={(e) => setImage(e.target.files[0])} />
 					</Form.File>
@@ -180,7 +151,7 @@ const History = () => {
 			};
 			const data = new FormData();
 			data.append("IMG", Image);
-			const res = await axios.post(
+			await axios.post(
 				`http://localhost:1000/order/bukti_bayar/${order}`,
 				data,
 				option
@@ -412,7 +383,7 @@ const History = () => {
 															</tr>
 														</thead>
 														<tbody>
-															{tableHistory()}
+															{tablePayment()}
 															<tr>
 																<td colSpan="5">Grand Total</td>
 																<td>{totalPrice().toLocaleString()}</td>

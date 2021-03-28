@@ -6,9 +6,13 @@ import Product from './Product'
 import StockOperasional from './StockOperasional'
 import Penjualan from "./Penjualan";
 import { Helmet } from 'react-helmet-async'
+import {useSelector} from 'react-redux'
+import {Redirect} from 'react-router-dom'
 
 
 function Dashboard() {
+    const {user} = useSelector((state) => state.user)
+    if(user.id_role === 1 || !user.id_user) return <Redirect to="/"/>
     return (
         <Tab.Container id="left-tabs-example" defaultActiveKey="product">
             <Helmet>

@@ -108,7 +108,7 @@ function Order() {
         // axios
         try {
             const isConfirm = message === 'canceled' ? false : true;
-            const res = await axios.post(`http://localhost:1000/admin/orders/confirmation/${order.no_order}`, { isConfirm })
+            await axios.post(`http://localhost:1000/admin/orders/confirmation/${order.no_order}`, { isConfirm })
             const res2 = await axios.get(`http://localhost:1000/admin/getCartAdmin/${order.no_order}`)
             let invoice = {
                 no_order: res2.data[0].no_order,
@@ -118,7 +118,7 @@ function Order() {
                 tgl_transaksi: res2.data[0].date,
                 cart: res2.data
             }
-            let res3=await axios.post("http://localhost:1000/cart/invoice",invoice)
+            await axios.post("http://localhost:1000/cart/invoice",invoice)
 
             console.log(invoice);
             console.log(res2.data)

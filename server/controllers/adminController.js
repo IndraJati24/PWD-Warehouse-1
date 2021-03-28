@@ -301,6 +301,23 @@ async function deliverOrder(req, res) {
                 SET status = 4
                 WHERE no_order = '${no_order}'
             `
+            const getOrders = `select * from orders o
+			join order_details od using (no_order)
+			join warehouse_product wp using(id_product)
+			where o.no_order = '${no_order}' and wp.id_warehouse = o.warehouse`
+			const result = await asyncQuery(getOrders)
+
+			const gudang = `select * from warehouse_product where id_warehouse = ${result[0].warehouse}`
+			const result2 = await asyncQuery(gudang)
+			result.forEach(async (cart) => {
+				result2.forEach(async (gudang) => {
+					if (cart.id_product === gudang.id_product && cart.warehouse === gudang.id_warehouse) {
+						const updateStock = `update warehouse_product set stock_belum_kirim=stock_belum_kirim - ${cart.quantity}, stock_operasional = stock_operasional - ${cart.quantity}, stock_sudah_kirim = stock_sudah_kirim + ${cart.quantity}
+											where id_product = ${db.escape(cart.id_product)} and id_warehouse = ${db.escape(cart.warehouse)}`
+						await asyncQuery(updateStock)
+					}
+				})
+			})
 
         await asyncQuery(queryOrder);
         res.status(200).send('delivered')

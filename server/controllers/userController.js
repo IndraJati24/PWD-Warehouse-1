@@ -34,11 +34,17 @@ function login(req, res) {
       username: result[0].username,
     });
 
+    let role;
+    if(result[0].role === 1){
+      role = 'user'
+    } else {
+      role= 'admin'
+    }
+
     delete result[0].password;
     delete result[0].verify;
-    // console.log(result[0])
 
-    res.status(200).json({ token, user: result[0] });
+    res.status(200).json({ token, user: result[0], role });
   });
 }
 
@@ -98,6 +104,7 @@ async function resetPassword(req, res) {
   const { token, password } = req.body
   const verify = jwt.verify(token, SECRET_KEY);
   const hashpass = cryptojs.HmacMD5(password, SECRET_KEY).toString();
+ 
   try {
     const verifyAccount = `update account set password = '${hashpass}' where email = '${verify.email}'`;
     await asyncQuery(verifyAccount);

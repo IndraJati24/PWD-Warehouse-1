@@ -13,7 +13,7 @@ function ResetPassword() {
     const onSubmitForm = (e) => {
         e.preventDefault()
 
-        axios.post('http://localhost:1000/user/resetPassword', { token }).then(res => {
+        axios.post('http://localhost:1000/user/resetPassword', { token, password : newPassword }).then(res => {
             console.log('success new pass');
         }).catch(err => {
             console.log(err)
