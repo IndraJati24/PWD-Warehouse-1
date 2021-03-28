@@ -2,7 +2,7 @@ const router = require("express").Router();
 
 const { adminController: { getProducts, addProduct, editProduct, deleteProduct,
     getCategories, addCategory, editCategory, deleteCategory, stockOperasional, stockOperasionalAll,
-    getOrders, confirmationOrder, deliverOrder } } = require("../controllers");
+    getOrders, confirmationOrder, deliverOrder,getCartAdmin } } = require("../controllers");
 
 router.get('/products', getProducts);
 router.post('/products', addProduct);
@@ -21,5 +21,10 @@ router.get('/stockOperasionalAll', stockOperasionalAll)
 router.get('/orders', getOrders)
 router.post('/orders/confirmation/:no_order', confirmationOrder)
 router.post('/orders/deliver/:no_order', deliverOrder)
+
+router.get('/getCartAdmin/:no_order', getCartAdmin)
+
+
+
 
 module.exports = router;

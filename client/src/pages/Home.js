@@ -154,9 +154,9 @@ export default function Home() {
                 {data.slice(indexOfFirstItem, indexOfLastItem).map((item, index) => {
 
                     return (
-                        <Card style={{ width: '12.5rem', margin: "1rem 1rem" }} key={index}>
-                            <Card.Img variant="top" src={item.image} style={{ height: "13rem" }} />
-                            <Card.Body >
+                        <Card  style={{ width: '12.5rem', margin: "1rem 1rem",borderRadius:25 }} key={index}>
+                            <Card.Img  variant="top" src={item.image} style={{ height: "13rem",borderRadius:25 }} />
+                            <Card.Body  >
                                 <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                                     <Card.Title>{item.name}</Card.Title>
                                     <Card.Text>IDR {item.price.toLocaleString()}</Card.Text>
@@ -194,18 +194,17 @@ export default function Home() {
     return (
         <div style={{ margin: "2rem 10rem" }}>
             <div style={{marginBottom:"1rem"}}>
-                <Carousel>
+                <Carousel >
                     {carousel.map((item, index) => {
                         return (
                             <Carousel.Item>
                                 <img
                                     src={item.images}
                                     alt="First slide"
-                                    style={{width:"100%",height:"500px"}}
+                                    style={{width:"100%",height:"500px",borderRadius:25}}
                                 />
                                 <Carousel.Caption>
-                                    <h3>First slide label</h3>
-                                    <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+                                    <h2>{item.quote}</h2>
                                 </Carousel.Caption>
                             </Carousel.Item>
                         )

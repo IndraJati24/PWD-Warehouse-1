@@ -308,5 +308,23 @@ async function deliverOrder(req, res) {
         res.status(400).send(err)
     }
 }
+async function getCartAdmin(req, res) {
+    const { no_order } = req.params
+    try {
+        const queryOrder = `select o.no_order,o.date,a.address,a.email,od.quantity,od.total,p.name,p.price from orders o
+        join order_details od on od.no_order=o.no_order
+        join account a on a.id_user=o.id_user
+        join product p on p.id_product=od.id_product
+        where o.no_order='${no_order}'
+        `
 
-module.exports = { getProducts, addProduct, editProduct, deleteProduct, getCategories, addCategory, editCategory, deleteCategory, stockOperasional, stockOperasionalAll, getOrders, confirmationOrder, deliverOrder }
+        let result= await asyncQuery(queryOrder);
+        res.status(200).send(result)
+    } catch (err) {
+        res.status(400).send(err)
+    }
+}
+
+
+
+module.exports = { getProducts, addProduct, editProduct, deleteProduct, getCategories, addCategory, editCategory, deleteCategory, stockOperasional, stockOperasionalAll, getOrders, confirmationOrder, deliverOrder,getCartAdmin }
