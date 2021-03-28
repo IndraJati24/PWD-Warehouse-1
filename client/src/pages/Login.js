@@ -11,6 +11,11 @@ import { Link, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux'
 // import axios from "axios";
 import { Helmet } from 'react-helmet-async'
+import GoogleLogin from 'react-google-login'
+import FacebookLogin from 'react-facebook-login';
+import { FaFacebook } from 'react-icons/fa';
+
+
 import { login } from '../action'
 
 const defaultData = {
@@ -45,19 +50,15 @@ const Login = () => {
     e.preventDefault();
 
     dispatch(login(data, history));
-    // login();
-    // axios
-    //   .post("http://localhost:1000/login", data)
-    //   .then((res) => {
-    //     setData(defaultData);
-    //     history.push("/");
-    //   })
-    //   .catch((err) => {
-    //     console.error(err.response, "error");
-    //     setErrorMessage(err.response.data);
-    //   });
   };
 
+  const responseGoogle = (response) => {
+    console.log({ response, env: process.env })
+  }
+
+  const responseFacebook = (response) => {
+    console.log(response)
+  }
   return (
     <Jumbotron style={styles.jumbotron}>
       <Helmet>
@@ -70,7 +71,6 @@ const Login = () => {
             <Alert
               variant="danger"
               onClose={() => {
-                // setErrorMessage("")
                 dispatch({ type: 'CLEAR_ERROR' })
               }}
               dismissible
@@ -120,9 +120,33 @@ const Login = () => {
               <Link to={{ pathname: "/forgot-password" }}>forgot password?</Link>
             </Form.Text>
           </Form.Group>
-          <Button variant="primary" type="submit">
-            {isLoading ? 'Loading...' : 'Submit'}
-          </Button>
+          <Form.Group>
+            <Button variant="primary" type="submit">
+              {isLoading ? 'Loading...' : 'Submit'}
+            </Button>
+          </Form.Group>
+          <hr />
+          <span>or Log in with (not ready)</span>
+          <Form.Group>
+            <GoogleLogin
+              clientId={process.env.REACT_APP_GOOGLE_KEY}
+              autoLoad={true}
+              onSuccess={responseGoogle}
+              onFailure={responseGoogle}
+              buttonText={false}
+              cookiePolicy={'single_host_origin'}
+              style={{ borderRadius: 50 }}
+            />
+            <FacebookLogin
+              appId={process.env.REACT_APP_FACEBOOK_KEY}
+              autoLoad={true}
+              fields="name,email,picture"
+              callback={responseFacebook}
+              textButton={false}
+              icon={<FaFacebook />}
+              style={{ borderRadius: 50 }}
+            />
+          </Form.Group>
           <Form.Text>
             Don't Have Account Yet? Register{" "}
             <Link to={{ pathname: "/register" }}>here</Link>
