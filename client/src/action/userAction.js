@@ -28,18 +28,22 @@ export const logout = () => {
 };
 
 export const login = (data, history) => async (dispatch) => {
-	dispatch({ type: "LOADING", payload: true });
-	try {
-		const result = await Axios.post('http://localhost:1000/user/login', data)
-		localStorage.setItem('token', result.data.token)
-		dispatch({ type: 'LOGIN', payload: result.data.user })
-		history.push('/')
-		dispatch({ type: "LOADING", payload: false });
-	} catch (err) {
-		console.log(err.response)
-		dispatch({ type: 'ERROR', payload: err.response.data });
-		dispatch({ type: 'LOADING', payload: false });
-	}
+    dispatch({ type: "LOADING", payload: true });
+    try {
+        const result = await Axios.post('http://localhost:1000/user/login', data)
+        localStorage.setItem('token', result.data.token)
+        dispatch({ type: 'LOGIN', payload: result.data.user })
+        if(result.data.role === 'user'){
+            history.push('/')
+        } else {
+            history.push('/admin/dashboard')
+        }
+        dispatch({ type: "LOADING", payload: false });
+    } catch (err) {
+        console.log(err.response)
+        dispatch({ type: 'ERROR', payload: err.response.data });
+        dispatch({ type: 'LOADING', payload: false });
+    }
 }
 
 export const keepLogin = () => async (dispatch) => {

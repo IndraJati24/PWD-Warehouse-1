@@ -24,7 +24,7 @@ class DetailProduct extends Component {
                 Axios.get(`http://localhost:1000/cart/getCart/${this.props.id}`)
                     .then((res2) => {
                         let detailPage = res.data.filter(item => item.id_product === parseInt(this.props.match.params.id))[0]
-                        let kategoriSerupa = res.data.filter(item => item.id_kategori === parseInt(detailPage.id_kategori) && item.total_stock > 0 && item.id_product != detailPage.id_product)
+                        let kategoriSerupa = res.data.filter(item => item.id_kategori === parseInt(detailPage.id_kategori) && item.total_stock > 0 && item.id_product !== detailPage.id_product)
                         this.setState({ cart: res2.data, product: detailPage, kategoriSama: kategoriSerupa, allProduct: res.data });
                     })
                     .catch((err) => console.log(err));
@@ -32,19 +32,6 @@ class DetailProduct extends Component {
             .catch((err) => console.log(err));
     }
 
-    // componentDidUpdate = async () => {
-
-    // 		Axios.get('http://localhost:1000/product/getAll')
-    // 			.then((res) => {
-    //                 let detailPage = res.data.filter(item => item.id_product === parseInt(this.props.match.params.id))[0]
-    //                 let kategoriSerupa = res.data.filter(item => item.id_kategori === parseInt(detailPage.id_kategori) && item.total_stock>0 &&item.id_product!=detailPage.id_product)
-
-    //                 this.setState({ product: detailPage,kategoriSama: kategoriSerupa });
-    // 				// console.log(res.data);
-    // 			})
-    // 			.catch((err) => console.log(err));
-
-    // };
 
     handleMinus = () => {
         if (this.state.qty <= 1) return;
@@ -126,13 +113,13 @@ class DetailProduct extends Component {
 
     handleBuyCat = (idx) => {
         let detailPage = this.state.allProduct.filter(item => item.id_product === parseInt(idx))[0]
-        let kategoriSerupa = this.state.allProduct.filter(item => item.id_kategori === parseInt(detailPage.id_kategori) && item.total_stock > 0 && item.id_product != detailPage.id_product)
+        let kategoriSerupa = this.state.allProduct.filter(item => item.id_kategori === parseInt(detailPage.id_kategori) && item.total_stock > 0 && item.id_product !== detailPage.id_product)
         this.setState({ product: detailPage, kategoriSama: kategoriSerupa, qty: 1 });
     }
 
     render() {
         const { product, modal, qty, kategoriSama } = this.state;
-        console.log(this.state.kategoriSama);
+        // console.log(this.state.kategoriSama);
         return (
             <div style={{ margin: "3rem 5rem" }}>
                 <h1>Product Detail</h1>
@@ -249,7 +236,7 @@ class DetailProduct extends Component {
                                         ? "outline-secondary"
                                         : "outline-success"
                                 }
-                                disabled={qty == product.total_stock ? true : false}
+                                disabled={parseInt(qty) === parseInt(product.total_stock) ? true : false}
                                 onClick={this.handlePlus}
                             >
                                 <i class="fas fa-plus-circle"></i>

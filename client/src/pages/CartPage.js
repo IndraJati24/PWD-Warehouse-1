@@ -31,7 +31,7 @@ class CartPage extends Component {
 	}
 
 	componentDidUpdate = async () => {
-		if (this.state.idx != this.props.id) {
+		if (this.state.idx !== this.props.id) {
 			await this.setState({ idx: this.props.id });
 			Axios.get(`http://localhost:1000/cart/getCart/${this.state.idx}`)
 				.then((res) => {
@@ -120,7 +120,7 @@ class CartPage extends Component {
 						<td>{index + 1}</td>
 						<td>{item.name}</td>
 						<td style={{ width: 150 }}>
-							<img src={item.image} height="100px" />
+							<img src={item.image} height="100px" alt={`gambar - ${index}`}/>
 						</td>
 						<td>{item.price.toLocaleString()}</td>
 						<td style={{}}>
@@ -166,7 +166,7 @@ class CartPage extends Component {
 					<td>{index + 1}</td>
 					<td>{item.name}</td>
 					<td style={{ width: 150 }}>
-						<img src={item.image} height="100px" />
+						<img src={item.image} height="100px" alt={`gambar - ${index}`} />
 					</td>
 					<td>{item.price.toLocaleString()}</td>
 					<td style={{ width: 100 }}>{item.quantity}</td>
@@ -229,21 +229,12 @@ class CartPage extends Component {
 			lng: getLocationUser.lng,
 		};
 
-		let invoice = {
-			no_order: data[0].no_order,
-			alamat,
-			total_harga: this.totalPrice().toLocaleString(),
-			email: this.props.email,
-			tgl_transaksi: this.state.data[0].date,
-			cart: data
-		}
 
 		Axios.post(`http://localhost:1000/order/wareLoc`, gudang)
 			.then((res) => {
 				Axios.post(`http://localhost:1000/user/address`, updateAlamat)
 					.then((res) => {
-						// Axios.post("http://localhost:1000/cart/invoice",invoice)
-						// .then((res)=>{
+					
 						this.setState({
 							invalidNama: false,
 							invalidTelepon: false,
@@ -253,8 +244,7 @@ class CartPage extends Component {
 							history: true
 						})
 						alert("transaction success please check history menu")
-						// })
-						// .catch((err) => console.log(err));
+						
 					})
 					.catch((err) => console.log(err));
 			})
@@ -265,6 +255,7 @@ class CartPage extends Component {
 		Axios.delete(`http://localhost:1000/cart/delAllCart/${this.props.id}`)
 			.then((res) => {
 				this.setState({ data: [] })
+				this.setState({modalDelete: false})
 			})
 			.catch((err) => console.log(err))
 	}

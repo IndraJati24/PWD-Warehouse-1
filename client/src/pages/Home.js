@@ -12,8 +12,8 @@ export default function Home() {
 
     //pagination
     const [currentPage, setcurrentPage] = useState(1)
-    const [itemsPerPage, setitemsPerPage] = useState(5)
-    const [pageNumberLimit, setpageNumberLimit] = useState(3);
+    const [itemsPerPage] = useState(5)
+    const [pageNumberLimit] = useState(3);
     const [maxPageNumberLimit, setmaxPageNumberLimit] = useState(3);
     const [minPageNumberLimit, setminPageNumberLimit] = useState(0);
 

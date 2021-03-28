@@ -130,7 +130,7 @@ const Login = () => {
           <Form.Group>
             <GoogleLogin
               clientId={process.env.REACT_APP_GOOGLE_KEY}
-              autoLoad={true}
+              // autoLoad={true}
               onSuccess={responseGoogle}
               onFailure={responseGoogle}
               buttonText={false}
@@ -139,7 +139,7 @@ const Login = () => {
             />
             <FacebookLogin
               appId={process.env.REACT_APP_FACEBOOK_KEY}
-              autoLoad={true}
+              // autoLoad={true}
               fields="name,email,picture"
               callback={responseFacebook}
               textButton={false}

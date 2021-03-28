@@ -8,7 +8,7 @@ import {
 	Modal,
 } from "react-bootstrap";
 import { Helmet } from 'react-helmet-async'
-
+import {Redirect} from 'react-router-dom'
 import { connect } from "react-redux";
 import { register } from "../action";
 
@@ -44,6 +44,7 @@ class Register extends React.Component {
 	};
 
 	render() {
+		if(this.state.toLogin === true) return <Redirect to="/login"/>
 		return (
 			<Jumbotron style={styles.jumbotron}>
 				<Helmet>
