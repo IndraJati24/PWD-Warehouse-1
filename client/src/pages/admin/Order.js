@@ -100,12 +100,31 @@ function Order() {
         const result = orders.map(data => data.no_order === order.no_order ? { ...data, status_name: message } : data)
 
         setOrders(result)
+        let totalPrice = (data) => {
+            let counter = 0;
+           data.map((item) => (counter += item.total));
+            return counter;
+        };
         // axios
         try {
             const isConfirm = message === 'canceled' ? false : true;
             const res = await axios.post(`http://localhost:1000/admin/orders/confirmation/${order.no_order}`, { isConfirm })
+            const res2 = await axios.get(`http://localhost:1000/admin/getCartAdmin/${order.no_order}`)
+            let invoice = {
+                no_order: res2.data[0].no_order,
+                alamat:res2.data[0].address,
+                total_harga: await  totalPrice(res2.data).toLocaleString(),
+                email: res2.data[0].email,
+                tgl_transaksi: res2.data[0].date,
+                cart: res2.data
+            }
+            let res3=await axios.post("http://localhost:1000/cart/invoice",invoice)
+
+            console.log(invoice);
+            console.log(res2.data)
+
+
             setOrder({})
-            console.log(res)
 
         } catch (err) {
             console.log(err.response)

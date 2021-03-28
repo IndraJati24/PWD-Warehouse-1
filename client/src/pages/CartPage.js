@@ -205,7 +205,7 @@ class CartPage extends Component {
 		let alamat = this.refs.alamat.value;
 
 		if (!nama) return this.setState({ invalidNama: true });
-		if (!telepon) return this.setState({ invalidTelepon: true });
+		if (!telepon ||telepon.length < 10) return this.setState({ invalidTelepon: true });
 		if (!alamat) return this.setState({ invalidAlamat: true });
 		if (!getLocationUser)
 			return this.setState({ toast: [true, "Tolong isi Form Kota Provinsi"] });
@@ -270,7 +270,8 @@ class CartPage extends Component {
 	}
 
 	render() {
-		let apiKey = "37603d38a85f4f36bda754c5aabfac4a";
+		// let apiKey = "37603d38a85f4f36bda754c5aabfac4a";
+		// console.log(process.env.REACT_APP_API_KEY);
 		if (this.state.history) return <Redirect to="/" />
 		return (
 			<div style={{ padding: "10px 30px" }}>
@@ -390,7 +391,7 @@ class CartPage extends Component {
 									isInvalid={this.state.invalidTelepon}
 								/>
 								<Form.Control.Feedback type="invalid">
-									Tolong Masukan Nomer Penerima
+									Nomor Tidak Valid
 								</Form.Control.Feedback>
 							</Form.Group>
 							<Form.Group>
@@ -410,7 +411,7 @@ class CartPage extends Component {
 								<Form.Label>Kota Provinsi</Form.Label>
 								<OpencageAutocomplete
 									placeholder="Kota Provinsi"
-									apiKey={apiKey}
+									apiKey={process.env.REACT_APP_API_KEY}
 									onSuggestionSelected={(event, { suggestion }) => {
 										console.log(suggestion);
 										this.setState({
